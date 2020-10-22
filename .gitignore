@@ -12,7 +12,7 @@
 #######################
 # Start by ignoring everything, and below we are explicitly saying
 # what to not ignore
-
+*
 
 #######################
 # List of files with GitHub functionality anywhere in the repo
@@ -33,7 +33,7 @@
 # with additional rules. The line below includes folder in the
 # top folder (but not their content), so that anything matching
 # the rules below will still not be ignored.
-
+!*/
 
 #######################
 # The following file types are code that should always be
@@ -73,7 +73,6 @@
 # to change the name of the Output folder to whatever it is called in your
 # project, but we strongly recommend that you only include these files in
 # a subset of the folders where you are certain no private data is ever stored.
-
 
 
 #######################
