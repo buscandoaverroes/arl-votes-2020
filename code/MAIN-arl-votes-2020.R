@@ -21,8 +21,8 @@ library(heatmaply)
 
 # repo path settings 
 root.code     <- "/Volumes/LA-REPUBLIC/github/arl-votes-2020"
-  app         <- file.path(root.code, "app")
 root.data     <- "/Volumes/la-republic"
+  app         <- file.path(root.code, "app")
   shp         <- file.path(root.data, "arl-shp/Voter_Precinct_Polygons-shp/Voter_Precinct_Polygons.shp")
   votes       <- file.path(root.data, "arl-daily-reports")
     latest    <- file.path(votes, "10-18-2020.pdf") # this is the path to the most recent tally pdf file.
@@ -61,7 +61,7 @@ s.totalvoted= 45873
 
 
 if (s.import == 1) {
-  source(file.path(root.code, "import.R"))
+  source(file.path(root.code, "code/import.R"))
 }
 
 

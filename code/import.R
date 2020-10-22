@@ -543,7 +543,7 @@ sp.norm <- scatterpolar %>%
 
 
             # run check script ----
-source(file.path(root.code, "assert.R"))
+source(file.path(root.code, "code/assert.R"))
 
 
 
