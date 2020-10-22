@@ -143,9 +143,9 @@ stats tab. Conceptually, this means that, for each indicator seperately, the raw
 data is transformed such as the highest value in each indicator becomes 1 and the 
 lowest value becomes zero. The code will reproduce this table for you as object 
 **sp.norm**.
-- Jefferson Precinct: The Arlington Country GIS indicates that lists the 
+- Jefferson Precinct: The Arlington Country GIS data indicate that the 
 Jefferson Precinct, while considered a single precinct (No. 27),
-as split among two different Virginia House districts (Districts 47 and 
+is split among two different Virginia House districts (Districts 47 and 
 49). However, as the Arlington County Voting data does not disaggregate 
 voting information by the two 'subsets' of the Jefferson district, for
 this application I have simply combined the two boundaries of the
