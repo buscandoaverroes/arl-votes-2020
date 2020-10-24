@@ -9,14 +9,18 @@ library(shinyWidgets)
 library(simplevis)
 library(shinydashboard)
 library(plotly)
-library(heatmaply)
 library(RColorBrewer)
+library(lwgeom)
 library(markdown)
 library(knitr)
 
 # opening
-root.data     <- "/Volumes/la-republic"
-load(file.path(root.data, "rdata/arl-vote2020.Rdata"))
+#root.data     <- "/Volumes/la-republic"
+#setwd()
+load("data/arl-vote2020.Rdata")
+
+
+#st_crs(vote.data$geometry) <- 4326 %% try uncommenting this and running next even tho polys won't show.
 
 vote <- vote.data %>%
     st_drop_geometry()
@@ -367,7 +371,7 @@ ui <- navbarPage(
         tabPanel(  
           "About",  
           fluidPage(
-            includeMarkdown("/Volumes/LA-REPUBLIC/code/README.md")
+            includeMarkdown("README.md")
            
           )
         )
@@ -390,32 +394,32 @@ server <- function(input, output, session) {
  
   
   
-  observeEvent(input$map_shape_click, {
-    p <- input$map_shape_click
-    print(p)
-    
-    # store coordinates 
-    click.lat <- p$lat
-    click.lng <- p$lng
-
-    click.point <- data.frame(lat = click.lat, lng = click.lng) %>%
-      st_as_sf(coords = c( "lat", "lng"))
-    
-    st_crs(click.point) <- st_crs(vote.data)
-      
-    print(click.point)
-    
-    # return overlapping feature
-    ret_precinct <- st_join(click.point, vote.data
-                            ) 
-      #select(`Precinct Name`)
-    
-    print(ret_precinct)
-    
-    
-    
-    
-  })
+  # observeEvent(input$map_shape_click, {
+  #   p <- input$map_shape_click
+  #   print(p)
+  #   
+  #   # store coordinates 
+  #   click.lat <- p$lat
+  #   click.lng <- p$lng
+  # 
+  #   click.point <- data.frame(lat = click.lat, lng = click.lng) %>%
+  #     st_as_sf(coords = c( "lat", "lng"))
+  #   
+  #   st_crs(click.point) <- st_crs(vote.data)
+  #     
+  #   print(click.point)
+  #   
+  #   # return overlapping feature
+  #   ret_precinct <- st_join(click.point, vote.data
+  #                           ) 
+  #     #select(`Precinct Name`)
+  #   
+  #   print(ret_precinct)
+  #   
+  #   
+  #   
+  #   
+  # })
   
  
   # reactive rendering of selected info  

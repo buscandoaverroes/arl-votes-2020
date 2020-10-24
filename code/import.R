@@ -16,8 +16,17 @@ polarvars <- c("Precinct Name", "Active Turnout",
 arl.precinct <-
   st_read(
     file.path(shp)
-    )
+    ) %>%
+  st_as_sf()   # read as sf
+  
 
+arl.precint <- st_transform_proj(
+    arl.precinct$geometry, "+init=epsg:4326")
+   # set crs to 4269 or NAD83
+# "+proj=lcc +lat_1=39.2 +lat_2=38.03333333333333 +lat_0=37.66666666666666 +lon_0=-78.5 +x_0=3500000.0001016 +y_0=2000000.0001016 +ellps=GRS80 +datum=NAD83 +to_meter=0.3048006096012192 +no_defs"
+#arl.precinct <- st_transform(arl.precinct, 4326)
+  
+  
 # make varnames all lowercase
 names(arl.precinct) <- str_to_lower(names(arl.precinct))
 
