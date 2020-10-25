@@ -20,10 +20,9 @@ library(knitr)
 load("data/arl-vote2020.Rdata")
 
 
-#st_crs(vote.data$geometry) <- 4326 %% try uncommenting this and running next even tho polys won't show.
-
-vote <- vote.data %>%
-    st_drop_geometry()
+vote <- vote.data
+vote.pr <- vote %>%
+  filter(`Precinct Name` != "Arlington Totals")
 
 # update
 up.date <- "17 Oct, 2020"
@@ -31,12 +30,12 @@ up.date <- "17 Oct, 2020"
 
 
 # define basemap 
-basemap <- leaflet() %>% 
-  addTiles() %>% 
-  setView(-77.1, 38.88, zoom = 12)
+# basemap <- leaflet() %>% 
+#   addTiles() %>% 
+#   setView(-77.1, 38.88, zoom = 12)
 
 # misc values 
-rate <- round(vote.turnout$`Cumulative Turnout`)
+
 
 # define popup vars to display 
 # later, make this in to interactive select multiple.
@@ -53,6 +52,10 @@ popupvaroptions <-c("Precinct Name", "Total Votes", "Mail Received", "Mail Ballo
                     "Precinct Share of Oustanding Mail Votes", "Precinct Share of Mail Ballots Received",
                     "Active Registered")
 
+arltotalvars <- c("`Active Turnout`", "`Turnout by Mail`", "`Turnout by Early Voting`",
+                  "`Mail Ballot Return Rate`", "`Early to Mail Ratio`", "`Early to Mail Turnout Ratio`",
+                  "`Mail Ballots Counted`", "`Early Voted`")
+
 polarplot <- c("Active Turnout", "Turnout by Mail", "Turnout by Early Voting",
                "Mail Ballot Return Rate", "Early to Mail Ratio", "Early to Mail Turnout Ratio")
 
@@ -63,15 +66,15 @@ heatmapvars <- c("Total Votes", "Mail Received", "Early Voted",
 
 
 
-pop.filter <- vote %>%
+pop.filter <- vote[vote$date %in% "2020-10-18",] %>%
   select(popupvars)
 
-# forheatmap
-vote.heatmap <- vote %>%
-  select(heatmapvars) %>%
-  as.data.frame()
-
-rownames(vote.heatmap) <- pop.filter$`Precinct Name`
+# # forheatmap
+# vote.heatmap <- vote %>%
+#   select(heatmapvars) %>%
+#   as.data.frame()
+# 
+# rownames(vote.heatmap) <- pop.filter$`Precinct Name`
 
 
 
@@ -96,21 +99,21 @@ ht.polar <- paste("%{theta}",
                   "<br>Normalized Value: %{r:.2f}")
 
 # correlation data 
-## from https://stackoverflow.com/a/13112337/4747043
-r <- cor(vote.heatmap)
-
-cor.test.p <- function(x) {
-  FUN <- function(x, y) cor.test(x, y)[["p.value"]]
-  z <- outer (
-    colnames(x), 
-    colnames(x),
-    Vectorize(function(i,j) FUN(x[,i], x[,j]))
-  )
-  dimnames(z) <- list(colnames(x), colnames(x))
-  z
-}
-
-p <- cor.test.p(vote.heatmap)
+# ## from https://stackoverflow.com/a/13112337/4747043
+# r <- cor(vote.heatmap)
+# 
+# cor.test.p <- function(x) {
+#   FUN <- function(x, y) cor.test(x, y)[["p.value"]]
+#   z <- outer (
+#     colnames(x), 
+#     colnames(x),
+#     Vectorize(function(i,j) FUN(x[,i], x[,j]))
+#   )
+#   dimnames(z) <- list(colnames(x), colnames(x))
+#   z
+# }
+# 
+# p <- cor.test.p(vote.heatmap)
 
 
 
@@ -135,96 +138,194 @@ ui <- navbarPage(
         
         
         tabPanel(
-            "Map",
+          "Timeline", 
+          fluidPage(
             fluidRow(
-              valueBox(paste0(rate, '%'), 'Estimated Turnout', width = 4, color = 'yellow'),
-              valueBox(prettyNum(vote.turnout$tot.votes, big.mark = ','),
-                       'Total Votes', width = 4, color = 'yellow'),
-              valueBox(up.date, "Data Update", color = 'fuchsia')),
-            
-            
-            leafletOutput(
-              "map",
-              width = '100%', 
-              height = 600
-              ),
-            
-            absolutePanel(
-              id    = 'controlpanel',
-              #class = "panel panel-default",
-              top   = 220, 
-              left  = 70,
-              width = 250,
-              fixed = TRUE,
-              draggable = TRUE,
-              height = 'auto',
-              cursor = "move",
-              wellPanel(
-                HTML(
-                  markdownToHTML(fragment.only = TRUE,
-                                 text = c("Map Options"))
-                ),
-                
-                pickerInput( 
-                  inputId =  'plotvar',
-                  label  =  'Variable to Plot',
-                  choices = list(Votes = c("Total Votes" = "Total Votes",
-                                           "Mail Ballots" = "Mail Received",
-                                           "Mail Ballots Counted" = "Mail Ballots Counted",
-                                           "Mail Ballots Outstanding" = "Mail Outstanding",
-                                           "Early Voting Ballots" = "Early Voted"
-                                           ),
-                                 Turnout = c("Active Voter Turnout" = "Active Turnout",
-                                             "Turnout via Mail" = "Turnout by Mail",
-                                             "Turnout via Early Voting" = "Turnout by Early Voting"),
-                                 Ratios = c("Mail Ballot Return Rate" = "Mail Ballot Return Rate", 
-                                            "Early-to-Mail Ratio" = "Early to Mail Ratio", 
-                                            "Early-to-Mail Turnout Ratio" = "Early to Mail Turnout Ratio",
-                                            "Share of All Outstanding Mail Ballots"="Precinct Share of Oustanding Mail Votes",
-                                            "Share of All Early Votes" = "Precinct Share of Early Votes",
-                                            "Percent Received Mail Counted" = "Percent Mail Counted")),
-                  selected = "Total Votes", 
-                  multiple = FALSE,
-                  width = 215
-                ),
-                
+                    valueBox(paste0(arl.tot$`Active Turnout`, '%'), 'Estimated Turnout', width = 4, color = 'yellow'),
+                    valueBox(prettyNum(arl.tot$`Total Votes`, big.mark = ','),
+                             'Total Votes', width = 4, color = 'yellow'),
+                    valueBox(up.date, "Data Update", color = 'fuchsia')),
+            fluidRow(plotlyOutput('timeline1')),
+            fluidRow(plotlyOutput('timeline2')),
               
-                pickerInput(
-                  'poplbls', 
-                  "Select Popup Information",
-                  choices = popupvaroptions,
-                  selected = c("Precinct Name", "Total Votes", "Mail Received", "Early Voted"),
-                  multiple = TRUE,
-                  width = 'auto',
-                  options = list(
-                    liveSearch = TRUE,
-                    liveSearchNormalize = TRUE,
-                    liveSearchStyle = 'contains',
-                    selectOnTab = TRUE,
-                    showTick = TRUE,
-                    title = "Title",
-                    virtualScroll = TRUE,
-                    width = 'auto',
-                    dropupAuto = TRUE
-                  )
-                ),
-                
-                
+              
+              # timeline input panel ---- 
+              absolutePanel(
+                id    = 'controlpanel1',
+                #class = "panel panel-default",
+                bottom = 50, 
+                right  = 10,
+                width  = 200,
+                fixed  = TRUE,
+                draggable = TRUE,
+                height = 'auto',
+                cursor = "move",
                 style = "opacity: 0.9",
                 
-                # output 
-               # plotlyOutput('polar')
-              ) # close well panel
+                wellPanel(
+                  
+                  HTML(
+                    markdownToHTML(fragment.only = TRUE,
+                                   text = c("Select Precints"))
+                  ),
+                  
+                  pickerInput(
+                    'timeline.in1',
+                    choices = arltotalvars,
+                    selected = "`Total Votes`",
+                    multiple = FALSE,
+                    width = 'auto',
+                    options = list(
+                      liveSearch = TRUE,
+                      liveSearchNormalize = TRUE,
+                      liveSearchStyle = 'contains',
+                      selectOnTab = TRUE,
+                      showTick = TRUE,
+                      title = "Title",
+                      virtualScroll = TRUE,
+                      width = 'auto',
+                      dropupAuto = TRUE
+                    )
+                  ),
+                  
+                  pickerInput(
+                    'timeline.in2',
+                    choices = sort(unique(vote$`Precinct Name`)),
+                    selected = "Abingdon",
+                    multiple = FALSE,
+                    width = 'auto',
+                    options = list(
+                      liveSearch = TRUE,
+                      liveSearchNormalize = TRUE,
+                      liveSearchStyle = 'contains',
+                      selectOnTab = TRUE,
+                      showTick = TRUE,
+                      title = "Title",
+                      virtualScroll = TRUE,
+                      width = 'auto',
+                      dropupAuto = TRUE
+                    )
+                  ),
+                  
+                    pickerInput(
+                    'timeline.in3',
+                    choices = sort(unique(vote$`Precinct Name`)),
+                    selected = "Ballston",
+                    multiple = FALSE,
+                    width = 'auto',
+                    options = list(
+                      liveSearch = TRUE,
+                      liveSearchNormalize = TRUE,
+                      liveSearchStyle = 'contains',
+                      selectOnTab = TRUE,
+                      showTick = TRUE,
+                      title = "Title",
+                      virtualScroll = TRUE,
+                      width = 'auto',
+                      dropupAuto = TRUE
+                    )
+                  ),
+                
+                  
+                ) # end wellpanel
+              ) # end absolute panel
               
-              
-              
-              # secondary absolute panel for additional graphs, info, etc?
-            ) # close absolute panel
-            
-            ), # close map tab panel 
-        # insert polar plot here (big, superimposed)
+          ) # end fluidpage
+          
+          
+        ), # end tab panel timeline
         
-        tabPanel( # ----
+        
+        # tabPanel( # map (coming soon)  ----
+        #     "Map",
+        #     fluidRow(
+        #       valueBox(paste0(rate, '%'), 'Estimated Turnout', width = 4, color = 'yellow'),
+        #       valueBox(prettyNum(vote.turnout$tot.votes, big.mark = ','),
+        #                'Total Votes', width = 4, color = 'yellow'),
+        #       valueBox(up.date, "Data Update", color = 'fuchsia')),
+        #     
+        #     
+        #     leafletOutput(
+        #       "map",
+        #       width = '100%', 
+        #       height = 600
+        #       ),
+        #     
+        #     absolutePanel(
+        #       id    = 'controlpanel',
+        #       #class = "panel panel-default",
+        #       top   = 220, 
+        #       left  = 70,
+        #       width = 250,
+        #       fixed = TRUE,
+        #       draggable = TRUE,
+        #       height = 'auto',
+        #       cursor = "move",
+        #       wellPanel(
+        #         HTML(
+        #           markdownToHTML(fragment.only = TRUE,
+        #                          text = c("Map Options"))
+        #         ),
+        #         
+        #         pickerInput( 
+        #           inputId =  'plotvar',
+        #           label  =  'Variable to Plot',
+        #           choices = list(Votes = c("Total Votes" = "Total Votes",
+        #                                    "Mail Ballots" = "Mail Received",
+        #                                    "Mail Ballots Counted" = "Mail Ballots Counted",
+        #                                    "Mail Ballots Outstanding" = "Mail Outstanding",
+        #                                    "Early Voting Ballots" = "Early Voted"
+        #                                    ),
+        #                          Turnout = c("Active Voter Turnout" = "Active Turnout",
+        #                                      "Turnout via Mail" = "Turnout by Mail",
+        #                                      "Turnout via Early Voting" = "Turnout by Early Voting"),
+        #                          Ratios = c("Mail Ballot Return Rate" = "Mail Ballot Return Rate", 
+        #                                     "Early-to-Mail Ratio" = "Early to Mail Ratio", 
+        #                                     "Early-to-Mail Turnout Ratio" = "Early to Mail Turnout Ratio",
+        #                                     "Share of All Outstanding Mail Ballots"="Precinct Share of Oustanding Mail Votes",
+        #                                     "Share of All Early Votes" = "Precinct Share of Early Votes",
+        #                                     "Percent Received Mail Counted" = "Percent Mail Counted")),
+        #           selected = "Total Votes", 
+        #           multiple = FALSE,
+        #           width = 215
+        #         ),
+        #         
+        #       
+        #         pickerInput(
+        #           'poplbls', 
+        #           "Select Popup Information",
+        #           choices = popupvaroptions,
+        #           selected = c("Precinct Name", "Total Votes", "Mail Received", "Early Voted"),
+        #           multiple = TRUE,
+        #           width = 'auto',
+        #           options = list(
+        #             liveSearch = TRUE,
+        #             liveSearchNormalize = TRUE,
+        #             liveSearchStyle = 'contains',
+        #             selectOnTab = TRUE,
+        #             showTick = TRUE,
+        #             title = "Title",
+        #             virtualScroll = TRUE,
+        #             width = 'auto',
+        #             dropupAuto = TRUE
+        #           )
+        #         ),
+        #         
+        #         
+        #         style = "opacity: 0.9",
+        #         
+        #         # output 
+        #        # plotlyOutput('polar')
+        #       ) # close well panel
+        #       
+        #       
+        #       
+        #       # secondary absolute panel for additional graphs, info, etc?
+        #     ) # close absolute panel
+        #     
+        #     ), # close map tab panel 
+        
+        tabPanel( # stats ----
           "Stats", 
           fluidPage(
             tags$h2("Key Voting Statistics by Precinct"),
@@ -255,7 +356,6 @@ ui <- navbarPage(
                     markdownToHTML(fragment.only = TRUE,
                                    text = c("Select Precints"))
                   ),
-                
                   
                   pickerInput(
                     'stat.in1',
@@ -350,25 +450,9 @@ ui <- navbarPage(
               
               
 
-     
-        # for future visualizations
-        # tabPanel(
-        #   "Stats",
-        #   fluidRow(
-        #     plotlyOutput(
-        #       'heatmap1'
-        #     )
-        #   ),
-        #   fluidRow(
-        #     plotlyOutput(
-        #       'heatmap2'
-        #     )
-        #   )
-        #   
-        #   
-        # ), 
+    
         
-        tabPanel(  
+        tabPanel(   # about ----
           "About",  
           fluidPage(
             includeMarkdown("README.md")
@@ -394,7 +478,32 @@ server <- function(input, output, session) {
  
   
   
-  # observeEvent(input$map_shape_click, {
+  # for timelines ----
+  
+  ## reactive values 
+  t1.in <- reactive({input$timeline.in1})
+  
+  
+  output$timeline1 <- renderPlotly({
+  t1 <-  ggplot(vote[vote$`Precinct Name` %in% "Arlington Totals",], aes(date, `Total Votes`)) +
+      geom_line() +
+      geom_point() +
+      theme_minimal()
+  ggplotly(t1)
+  })
+  
+  output$timeline2 <- renderPlotly({
+  t2 <-  ggplot(vote.pr, aes(date, `Total Votes`)) +
+      geom_line(aes(color = `Precinct Name`)) +
+      geom_point(aes(color = `Precinct Name`)) +
+      theme_minimal()
+  ggplotly(t2)
+  })
+  
+  
+  
+  
+  # observeEvent(input$map_shape_click, { # for map ----
   #   p <- input$map_shape_click
   #   print(p)
   #   
@@ -422,7 +531,7 @@ server <- function(input, output, session) {
   # })
   
  
-  # reactive rendering of selected info  
+  # reactive rendering of selected info   ----
   ## Make concatenated popupvarlist 
   sel.popvars <- reactive({
     union(as.vector(input$poplbls), as.vector(input$plotvar))
@@ -439,87 +548,86 @@ server <- function(input, output, session) {
   
   # map - - - - ----
   
-  # output 
-  output$map <-leaflet::renderLeaflet({
-  
-    basemap
-    # part of map that won't change dynamically (polygons)
-  })
-  
-  
-  # draw map 
-  draw_map <- function() {
-    
-  # convert selected variable 
-  selected_var <- input$plotvar
-  
-  # convert nbins slider to variable 
-  # selected_bins <- reactive({input$select.bins}
-  # denom   <- reactive({(1 / selected_bins())}) # determine step
-
-  col_cut <- as.vector(seq(0, 1, by = 0.25)) # formerly input$select.bins
-
-    
-  # title 
-  title <- paste0(selected_var)
-  
-  #leaftlet call 
-  leaflet_sf_col(
-    data = vote.data, # this is not reactive object since not change
-    col_var = selected_var, # variable to set color features?
-    label_var = "Precinct Name",
-    col_method = "quantile", # if "quantile", use "ntile" object for col_cuts
-    opacity = 0.8,
-    col_cuts = col_cut,
-    title = title,
-    legend_digits = 2,
-    popup = leafpop::popupTable(sentence_spaced_colnames(sel.pop.filter()),
-                                row.numbers = FALSE,
-                                feature.id = FALSE)
-    ) 
-    
-  }
-  
-  #observe 
-  observe({
-    req(input$map_zoom) # wait for zoom before plotting 
-    
-    withProgress(
-      message = "Loading", {
-        draw_map()
-      })
-  })
+  # # output 
+  # output$map <-leaflet::renderLeaflet({
+  # 
+  #   basemap
+  #   # part of map that won't change dynamically (polygons)
+  # })
+  # 
+  # 
+  # # draw map 
+  # draw_map <- function() {
+  #   
+  # # convert selected variable 
+  # selected_var <- input$plotvar
+  # 
+  # # convert nbins slider to variable 
+  # # selected_bins <- reactive({input$select.bins}
+  # # denom   <- reactive({(1 / selected_bins())}) # determine step
+  # 
+  # col_cut <- as.vector(seq(0, 1, by = 0.25)) # formerly input$select.bins
+  # 
+  #   
+  # # title 
+  # title <- paste0(selected_var)
+  # 
+  # #leaftlet call 
+  # leaflet_sf_col(
+  #   data = vote.data, # this is not reactive object since not change
+  #   col_var = selected_var, # variable to set color features?
+  #   label_var = "Precinct Name",
+  #   col_method = "quantile", # if "quantile", use "ntile" object for col_cuts
+  #   opacity = 0.8,
+  #   col_cuts = col_cut,
+  #   title = title,
+  #   legend_digits = 2,
+  #   popup = leafpop::popupTable(sentence_spaced_colnames(sel.pop.filter()),
+  #                               row.numbers = FALSE,
+  #                               feature.id = FALSE)
+  #   ) 
+  #   
+  # }
+  # 
+  # #observe 
+  # observe({
+  #   req(input$map_zoom) # wait for zoom before plotting 
+  #   
+  #   withProgress(
+  #     message = "Loading", {
+  #       draw_map()
+  #     })
+  # })
   
   
   
   # Heatmap ----
   
-  output$heatmap1 <- renderPlotly(
-    heatmaply(
-      normalize(vote.heatmap),
-    #  xlab = "Stats", 
-      ylab = "Precincts",
-      main = "Normalized Heatmap",
-      show_dendrogram = FALSE,
-      label_names = c("Precinct", "Indicator", "Value"),
-      showticklabels = c(TRUE, FALSE),
-      labRow = vote.heatmap$`Precinct Name`,
-      dynamicTicks = TRUE
-    )
-    
-  )
+  # output$heatmap1 <- renderPlotly( # heatmap ----
+  #   heatmaply(
+  #     normalize(vote.heatmap),
+  #   #  xlab = "Stats", 
+  #     ylab = "Precincts",
+  #     main = "Normalized Heatmap",
+  #     show_dendrogram = FALSE,
+  #     label_names = c("Precinct", "Indicator", "Value"),
+  #     showticklabels = c(TRUE, FALSE),
+  #     labRow = vote.heatmap$`Precinct Name`,
+  #     dynamicTicks = TRUE
+  #   )
+  # )
   
-   output$heatmap2 <- renderPlotly(
-     heatmaply_cor(
-       r,
-       main = "Correlation Map",
-       node_type = "scatter", 
-       point_size_mat= -log10(p),
-       point_size_name= "-log10(p-value)",
-       label_names = c("x", "y", "correlation"),
-       show_dendrogram = FALSE
-     )
-   )
+   # output$heatmap2 <- renderPlotly(
+   #   heatmaply_cor(
+   #     r,
+   #     main = "Correlation Map",
+   #     node_type = "scatter", 
+   #     point_size_mat= -log10(p),
+   #     point_size_name= "-log10(p-value)",
+   #     label_names = c("x", "y", "correlation"),
+   #     show_dendrogram = FALSE
+   #   )
+   # )
  
 
   # polar plot ----

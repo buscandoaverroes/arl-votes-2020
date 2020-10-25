@@ -16,6 +16,8 @@ library(pdftools)
 library(hablar)
 library(assertthat)
 library(heatmaply)
+library(tsibble)
+library(lubridate)
 
 
 
@@ -31,8 +33,11 @@ root.data     <- "/Volumes/la-republic"
 
 
 # script settings 
-
+s.gis    <- 0
 s.import <- 1
+
+
+
 
 export   <- 1 # 1 exports the file.
 
@@ -42,14 +47,34 @@ max1 <- 56
 min2 <- 4
 max2 <- 11
 
+# latest date 
+latestdate <- lubridate::as_date(ymd("2020-10-18"))
+
 # totals
 totalsrow <- 12 # the row on page 2 that contains the total field
 e.totmail     = 1 # error term for total mail. My counts are correct as far as I know
 e.outstanding = 1 # error term for mail outstanding.
+
+e.totmail18     = 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding18 = 1 # error term for mail outstanding.
+
+e.totmail15     = 101 # error term for total mail. My counts are correct as far as I know
+e.outstanding15 = 101 # error term for mail outstanding.
+
+e.totmail12     = 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding12 = 1 # error term for mail outstanding.
+
+e.totmail9     = 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding9 = 1 # error term for mail outstanding.
+
+
+
+
 # final assertion values 
 # note these values are copied 'by hand' from 
 # the imported pdf each day to ensure total numbers are correct 
-nrow        = 54
+
+nrow        = 55 # there are 54 precincts plus one totals row
 s.mailed    = 22860
 s.received  = 22517
 s.counted   = 2471
@@ -59,6 +84,10 @@ s.totalvoted= 45873
   
 
 
+
+if (s.gis == 1) {
+  source(file.path(root.code, "code/gis.R"))
+}
 
 if (s.import == 1) {
   source(file.path(root.code, "code/import.R"))
@@ -85,6 +114,7 @@ if (s.import == 1) {
 # https://stackoverflow.com/questions/7340472/how-do-i-generate-a-list-with-a-specified-increment-step
 # https://stackoverflow.com/questions/18535823/how-to-union-two-date-vectors-in-r
 # https://stackoverflow.com/questions/29968152/python-setting-background-color-to-transparent-in-plotly-plots
+# https://stackoverflow.com/questions/37635085/how-to-subset-dataframe-using-string-values-from-a-list
 
 
 
