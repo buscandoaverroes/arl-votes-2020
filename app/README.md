@@ -13,7 +13,7 @@ this project is run independently and is not affiliated with Arlington County in
 capacity.
 
 ## Contact
-You can write me at buscandoaverroes@icloud.com or contribute to the code at on [GitHub](https://github.com/buscandoaverroes/arl-votes-2020). Please do write me or contribute suggestions on how to improve the dashboard.
+You can write me at buscandoaverroes@icloud.com or contribute to the code on [GitHub](https://github.com/buscandoaverroes/arl-votes-2020).
 
 ## Viewing
 The app link is [here](). <br>
@@ -26,12 +26,10 @@ meaning that you can almost do whatever you want with my work
 as long as you keep this license with whatever you do. <br><br>
 However the voting data and voting precinct data are not mine and
 you shouldn't claim them as yours either. They come with their own rules
-and licences, which I have actually taken care to find and read. You may
-not, under any circumstances, modify or alter the voting or GIS data
-from Arlington County. As I do not intend to redistribute their data,
-please refer to the links below to get the voting tallies or precinct
-boundaries from their respective sources. Please take care to note the
-licenses in the R packages that I use as well. <br>
+and licences, which I have actually taken care to find and read. 
+As I do not intend to redistribute the County's data,
+please refer to the links below to get the voting tallies etc,
+from their respective sources.<br>
 
 # About the Data
 All data are updated within ~48 hours from from Arlington Country Government and
