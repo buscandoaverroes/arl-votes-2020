@@ -53,19 +53,19 @@ latestdate <- lubridate::as_date(ymd("2020-10-18"))
 # totals
 totalsrow <- 12 # the row on page 2 that contains the total field
 e.totmail     = 1 # error term for total mail. My counts are correct as far as I know
-e.outstanding = 1 # error term for mail outstanding.
+e.outstanding = 1 # error term for Mail.Outstanding.
 
 e.totmail18     = 1 # error term for total mail. My counts are correct as far as I know
-e.outstanding18 = 1 # error term for mail outstanding.
+e.outstanding18 = 1 # error term for Mail.Outstanding.
 
 e.totmail15     = 101 # error term for total mail. My counts are correct as far as I know
-e.outstanding15 = 101 # error term for mail outstanding.
+e.outstanding15 = 101 # error term for Mail.Outstanding.
 
 e.totmail12     = 1 # error term for total mail. My counts are correct as far as I know
-e.outstanding12 = 1 # error term for mail outstanding.
+e.outstanding12 = 1 # error term for Mail.Outstanding.
 
 e.totmail9     = 1 # error term for total mail. My counts are correct as far as I know
-e.outstanding9 = 1 # error term for mail outstanding.
+e.outstanding9 = 1 # error term for Mail.Outstanding.
 
 
 
@@ -115,6 +115,8 @@ if (s.import == 1) {
 # https://stackoverflow.com/questions/18535823/how-to-union-two-date-vectors-in-r
 # https://stackoverflow.com/questions/29968152/python-setting-background-color-to-transparent-in-plotly-plots
 # https://stackoverflow.com/questions/37635085/how-to-subset-dataframe-using-string-values-from-a-list
+# https://stackoverflow.com/questions/35345782/shiny-passing-inputvar-to-aes-in-ggplot2
+# https://plotly.com/graphing-libraries/
 
 
 

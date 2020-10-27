@@ -4,8 +4,8 @@
 # ---  --- --- --- --- --- --- --- --- --- --- --- --- #
 
 
-# load + process voting data file ---- 
-# page info 
+# load + process voting data file ----
+# page info
 raw.info <- pdf_info(file.path(votes, "arl-votes-10-12.pdf"))
 
 # import both pages
@@ -26,30 +26,30 @@ totals.tib <- tibble(RawText=pg2.split) %>%
   mutate(Rest=str_squish(Rest),
          Rest=str_replace_all(Rest, "\\(X\\)", "NA")) %>%
   separate(Rest,
-           into=c('mailed', 'Rest'), 
+           into=c('mailed', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('received', 'Rest'), 
+           into=c('received', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('counted', 'Rest'), 
+           into=c('counted', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('total.mail', 'Rest'), 
+           into=c('total.mail', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('early.voted', 'total.voted'), 
+           into=c('early.voted', 'total.voted'),
            sep = "[:space:]",
            extra='merge') %>%
   convert(num(mailed, received, counted, total.mail, early.voted, total.voted))
 
 
 
-pg2.tib <- tibble(RawText=pg2.split) %>% 
+pg2.tib <- tibble(RawText=pg2.split) %>%
   filter(row_number() <= max2) %>%
   filter(row_number() >= min2) %>%
   mutate(TextSquish=str_replace_all(RawText, "(\\.\\s)", "\\.")) %>%
@@ -58,29 +58,29 @@ pg2.tib <- tibble(RawText=pg2.split) %>%
   mutate(Rest=str_squish(Rest),
          Rest=str_replace_all(Rest, "\\(X\\)", "NA")) %>%
   separate(Rest,
-           into=c('prec_name', 'Rest'), 
+           into=c('prec_name', 'Rest'),
            sep = "(?<=[:alpha:])[:space:](?=[:digit:])",
            extra='merge') %>%
   separate(Rest,
-           into=c('mailed', 'Rest'), 
+           into=c('mailed', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('received', 'Rest'), 
+           into=c('received', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('counted', 'Rest'), 
+           into=c('counted', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('total.mail', 'Rest'), 
+           into=c('total.mail', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('early.voted', 'total.voted'), 
+           into=c('early.voted', 'total.voted'),
            sep = "[:space:]",
-           extra='merge')  
+           extra='merge')
 
 
 # page 1
@@ -96,29 +96,29 @@ pg1.tib <- tibble(RawText=pg1.split) %>%
   mutate(Rest=str_squish(Rest),
          Rest=str_replace_all(Rest, "\\(X\\)", "NA")) %>%
   separate(Rest,
-           into=c('prec_name', 'Rest'), 
+           into=c('prec_name', 'Rest'),
            sep = "(?<=[:alpha:])[:space:](?=[:digit:])",
            extra='merge') %>%
   separate(Rest,
-           into=c('mailed', 'Rest'), 
+           into=c('mailed', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('received', 'Rest'), 
+           into=c('received', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('counted', 'Rest'), 
+           into=c('counted', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('total.mail', 'Rest'), 
+           into=c('total.mail', 'Rest'),
            sep = "[:space:]",
            extra='merge') %>%
   separate(Rest,
-           into=c('early.voted', 'total.voted'), 
+           into=c('early.voted', 'total.voted'),
            sep = "[:space:]",
-           extra='merge') 
+           extra='merge')
 
 
 # append + rename variables
@@ -139,8 +139,8 @@ vote12 <- bind_rows(pg1.tib, pg2.tib) %>%
 
 
 
-# merge with voter data with sf and registration data  ---- 
-# if using precinct gis data, import 
+# merge with voter data with sf and registration data  ----
+# if using precinct gis data, import
 if (s.gis == 1) {
   arl.precinct <- readRDS(file = file.path(root.data, "precinct-gis.Rda"))
 }
@@ -150,28 +150,28 @@ if (s.gis == 1) {
 
 ## make lists of vars
 
-### voter data 
+### voter data
 numvars1 <- c("precinct", "total.voted", "mailed", "counted", "total.mail",
               "mail.outstanding", "mail.received", "early.voted")
 fctvars1 <- c('prec_name')
 
-### precinct data 
+### precinct data
 numvars2 <- c("objectid", "precinct", "senate")
 fctvars2 <- c("prec_name", "label")
 
-### registration data 
+### registration data
 numvars3 <- c("precinct", "active", "inactive", "all", "military", "overseas", "federal")
 fctvars3 <- c("prec_name")
 
 
 ## make changes...
-vote12 <- 
+vote12 <-
   vote12 %>%
   convert(num(numvars1),
           fct(fctvars1))
 
 if (s.gis == 1) {
-  arl.precinct <- 
+  arl.precinct <-
     arl.precinct %>%
     convert(num(numvars2),
             fct(fctvars2))
@@ -185,7 +185,7 @@ vote.data12 <-
             by = "precinct",
             suffix = c('.x', '.y')) %>%
   mutate(
-    prec_name = coalesce(prec_name.x, prec_name.y) 
+    prec_name = coalesce(prec_name.x, prec_name.y)
   ) %>%
   select(-prec_name.x, -prec_name.y)
 
@@ -198,7 +198,7 @@ if (s.gis == 1) {
     mutate(
       prec_name = coalesce(prec_name.y, prec_name.x) # take vote.register names as it has house infused
     ) %>%
-    select(precinct, prec_name, everything(), 
+    select(precinct, prec_name, everything(),
            -prec_name.x, -prec_name.y) %>%
     st_as_sf()
 }
@@ -210,7 +210,7 @@ if (s.gis == 1) {
 
 
 
-# quick data mutations 
+# quick data mutations
 vote.data12 <-
   vote.data12 %>%
   mutate(
@@ -250,73 +250,73 @@ assert_that( sum( (vote.data12$prec.early.turnout + vote.data12$prec.mail.turnou
 vote.data12 <- vote.data12 %>%
   rename(
     Precinct = precinct,
-    `Precinct Name` = prec_name,
-    `Mail Outstanding` = mail.outstanding,
-    `Mail Received` = mail.received,
-    `Early Voted` = early.voted,
-    `Active Registered` = active,
-    `Inactive Registered` = inactive,
-    `All Registered` = all,
+    Precinct.Name = prec_name,
+    Mail.Outstanding = mail.outstanding,
+    Mail.Received = mail.received,
+    Early.Voted = early.voted,
+    Active.Registered = active,
+    Inactive.Registered = inactive,
+    All.Registered = all,
     Military = military,
     Overseas = overseas,
     Federal = federal,
-    # `VA House District` = house,
-    # `VA Senate District` = senate,
-    # `Polling Place` = polling_pl,
-    `Total Votes` = prec.tot.votes,
-    `Outstanding Votes` = prec.outstand.votes,
-    `Percent Outstanding Votes` = outstand.votes.pct,
-    `Mail Ballots Requested` = mail.request,
-    `Precinct Share of All Votes` =  prec.tot.votes.pct,
-    `Mail Ballot Return Rate` = mail.return.pct,
-    `Precinct Share of Early Votes` = early.voted.pct,
-    `Precinct Share of Oustanding Mail Votes` = mail.outstanding.pct,
-    `Precinct Share of Mail Ballots Received` = mail.received.pct,
-    `Early to Mail Ratio` = mail.early.ratio,
+    # VA House District = house,
+    # VA Senate District = senate,
+    # Polling Place = polling_pl,
+    Total.Votes = prec.tot.votes,
+    Outstanding.Votes = prec.outstand.votes,
+    Percent.Outstanding.Votes = outstand.votes.pct,
+    Mail.Ballots.Requested = mail.request,
+    Precinct.Share.of.All.Votes =  prec.tot.votes.pct,
+    Mail.Ballot.Return.Rate = mail.return.pct,
+    Precinct.Share.of.Early.Votes = early.voted.pct,
+    Precinct.Share.of.Oustanding.Mail.Votes = mail.outstanding.pct,
+    Precinct.Share.of.Mail.Ballots.Received = mail.received.pct,
+    Early.to.Mail.Ratio = mail.early.ratio,
     Turnout = prec.cur.turnout,
-    `Active Turnout` = prec.act.turnout,
-    `Turnout by Mail` = prec.mail.turnout,
-    `Turnout by Early Voting` = prec.early.turnout,
-    `Early to Mail Turnout Ratio` =  mail.turnout.ratio,
-    `Mail Ballots Counted`  = counted
+    Active.Turnout = prec.act.turnout,
+    Turnout.by.Mail = prec.mail.turnout,
+    Turnout.by.Early.Voting = prec.early.turnout,
+    Early.to.Mail.Turnout.Ratio =  mail.turnout.ratio,
+    Mail.Ballots.Counted  = counted
   )
 
 
-# create a total/Arlington Row 
+# create a total/Arlington Row
 ## first make a 2-row tibble with names of the main vote dataset
 arl <- tibble(
   Precinct = 0,
-  `Precinct Name` = "Arlington Totals",
-  `Mail Outstanding` = sum(vote.data12$`Mail Outstanding`),
-  `Mail Received` = sum(vote.data12$`Mail Received`),
-  `Early Voted` = sum(vote.data12$`Early Voted`),
-  `Active Registered` = sum(vote.data12$`Active Registered`),
-  `Inactive Registered` = sum(vote.data12$`Inactive Registered`),
-  `All Registered` = sum(vote.data12$`All Registered`),
+  Precinct.Name = "Arlington Totals",
+  Mail.Outstanding = sum(vote.data12$Mail.Outstanding),
+  Mail.Received = sum(vote.data12$Mail.Received),
+  Early.Voted = sum(vote.data12$Early.Voted),
+  Active.Registered = sum(vote.data12$Active.Registered),
+  Inactive.Registered = sum(vote.data12$Inactive.Registered),
+  All.Registered = sum(vote.data12$All.Registered),
   Military = sum(vote.data12$Military),
   Overseas = sum(vote.data12$Overseas),
   Federal = sum(vote.data12$Federal),
-  `Total Votes` = sum(vote.data12$`Total Votes`),
-  `Outstanding Votes` = sum(vote.data12$`Outstanding Votes`),
-  `Percent Outstanding Votes` = sum(vote.data12$`Percent Outstanding Votes`),
-  `Mail Ballots Requested` = sum(vote.data12$`Mail Ballots Requested`),
-  `Precinct Share of All Votes` =  100, # must be 100
-  `Mail Ballot Return Rate` = round( (sum(vote.data12$`Mail Received`) /
-                                        sum(vote.data12$`Mail Ballots Requested`)), 2),
-  `Precinct Share of Early Votes` = 100, # will be 100
-  `Precinct Share of Oustanding Mail Votes` = 100, # will be 100
-  `Precinct Share of Mail Ballots Received` = 100, # will be 100
-  `Early to Mail Ratio` = round((`Early Voted` / `Mail Received` ), 1),
-  Turnout = round( 100 * (`Total Votes`/`All Registered`), 1),
-  `Active Turnout` = round( 100 * (`Total Votes`/`Active Registered`), 1),
-  `Turnout by Mail` = round( 100 * (`Mail Received`/`Active Registered`), 1),
-  `Turnout by Early Voting` = round( 100 * (`Early Voted`/`Active Registered`), 1),
-  `Early to Mail Turnout Ratio` =  round((`Turnout by Early Voting`/`Turnout by Mail`),1),
-  `Mail Ballots Counted`  = sum(vote.data12$`Mail Ballots Counted`),
+  Total.Votes = sum(vote.data12$Total.Votes),
+  Outstanding.Votes = sum(vote.data12$Outstanding.Votes),
+  Percent.Outstanding.Votes = sum(vote.data12$Percent.Outstanding.Votes),
+  Mail.Ballots.Requested = sum(vote.data12$Mail.Ballots.Requested),
+  Precinct.Share.of.All.Votes =  100, # must be 100
+  Mail.Ballot.Return.Rate = round( (sum(vote.data12$Mail.Received) /
+                                        sum(vote.data12$Mail.Ballots.Requested)), 2),
+  Precinct.Share.of.Early.Votes = 100, # will be 100
+  Precinct.Share.of.Oustanding.Mail.Votes = 100, # will be 100
+  Precinct.Share.of.Mail.Ballots.Received = 100, # will be 100
+  Early.to.Mail.Ratio = round((Early.Voted / Mail.Received ), 1),
+  Turnout = round( 100 * (Total.Votes/All.Registered), 1),
+  Active.Turnout = round( 100 * (Total.Votes/Active.Registered), 1),
+  Turnout.by.Mail = round( 100 * (Mail.Received/Active.Registered), 1),
+  Turnout.by.Early.Voting = round( 100 * (Early.Voted/Active.Registered), 1),
+  Early.to.Mail.Turnout.Ratio =  round((Turnout.by.Early.Voting/Turnout.by.Mail),1),
+  Mail.Ballots.Counted  = sum(vote.data12$Mail.Ballots.Counted),
   date      = lubridate::as_date(ymd("2020-10-12"))
 )
 
-## append arl totals to vote.data 
+## append arl totals to vote.data
 vote.data12 <- bind_rows(vote.data12, arl)
 
 
@@ -325,30 +325,30 @@ vote.data12 <- bind_rows(vote.data12, arl)
 
 
 # run check script ----
-# sum of total votes == given sum of total votes
-assert_that(arl$`Total Votes`[1] == totals.tib$total.voted[1])
+# sum of Total.Votes == given sum of Total.Votes
+assert_that(arl$`Total.Votes`[1] == totals.tib$total.voted[1])
 
-# sum of early voted == given sum of early votes
-assert_that(arl$`Early Voted`[1] == totals.tib$early.voted[1]) 
+# sum of Early.Voted == given sum of early votes
+assert_that(arl$`Early.Voted`[1] == totals.tib$early.voted[1])
 
-# sum of total mail == given sum of total mail ballots requested 
-assert_that(sum(arl$`Mail Ballots Requested`[1] + e.totmail12) == totals.tib$total.mail[1]) # 101 undercount
+# sum of total mail == given sum of total Mail.Ballots.Requested
+assert_that(sum(arl$`Mail.Ballots.Requested`[1] + e.totmail12) == totals.tib$total.mail[1]) # 101 undercount
 
-# sum of total counted == given sum of total counted 
-assert_that(sum(arl$`Mail Ballots Counted`[1]) == totals.tib$counted[1])
+# sum of total counted == given sum of total counted
+assert_that(sum(arl$`Mail.Ballots.Counted`[1]) == totals.tib$counted[1])
 
-# sum of total mail received == given sum of received + given sum of counted 
-assert_that( sum(arl$`Mail Received`[1]) == (totals.tib$received[1] + totals.tib$counted[1] ) )
+# sum of total Mail.Received == given sum of received + given sum of counted
+assert_that( sum(arl$`Mail.Received`[1]) == (totals.tib$received[1] + totals.tib$counted[1] ) )
 
 # sum of total outstanding mail votes == given sum of "outstanding" (or "mailed" as imported)
-assert_that((sum(arl$`Mail Outstanding`[1]) + e.outstanding12) == totals.tib$mailed[1]) # 101 off undercount
+assert_that((sum(arl$`Mail.Outstanding`[1]) + e.outstanding12) == totals.tib$mailed[1]) # 101 off undercount
 
 # assert that there are 54 precincts + 1 totals tib
 assert_that(nrow(vote.data12) == nrow )
 
 
 
-# remove the un-needed objects 
+# remove the un-needed objects
 rm(raw.info, raw1, raw2, pg2.split, totals.tib, pg2.tib, pg1.split, pg1.tib, arl)
 
 # save ----

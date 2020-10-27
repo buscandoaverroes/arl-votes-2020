@@ -1,5 +1,5 @@
 # arl-votes-2020
-A application that tracks publicly-available voting data for Arlington County, VA. This app is a work in progress, and I will continue to publish new features and updates to the data as they become available.
+A application that tracks publicly-available voting data for Arlington County, VA. This app is a work in progress, and I will continue to publish new features and updates to the data as they become available. The Arlington County website that posts daily is currently down, so for the time being I am posting the lastest data I have.
 
 # About Arlington Votes 2020
 This app is intended as a public good to
@@ -48,8 +48,8 @@ Arlington, so I upload the most recent document and tell you the
 date on the splash page. Voter registration data is also public
 and was last updated on 1 October, 2020. The data that define the
 precinct geographic boundaries and names come from Arlington County;
-the files were updated last on 24 September, 2020. Refer to the **About**
-page for additional techincal details.
+the files were updated last on 24 September, 2020, although they are not used in
+the current version of this app. 
 
 
 ## Is This Data Actually Accurate?
@@ -82,7 +82,7 @@ data is quite accurate for the 2020 election cycle. <br>
 
 Arlington County provides voting data by precinct, with name and
 precinct code. The voting data come in the form of three columns
-or variables: **Mail Ballots Outstanding**, **Mail Ballots Received**,
+or variables: **Mail Ballots Outstanding**, **Mail.Ballots.Received**,
 and **Early Voting**.
 
 ### About the Terms I Use
@@ -90,8 +90,8 @@ and **Early Voting**.
 only indicate the number of ballots received and outstanding;
 it can be reasonably assumed that the total number of ballots
 requested is the sum of these two numbers, which is how I compute it.
-- Mail Ballot Return Rate: is simply **(No. Mail Ballots Receieved)
-/ (No. Mail Ballots Requested)**. The data do not allow us to discen
+- Mail.Ballot.Return.Rate: is simply **(No. Mail Ballots Receieved)
+/ (No. Mail.Ballots.Requested)**. The data do not allow us to discen
 if voters who requested a mail ballot have voted early in lieu of
 voting by mail, which is allowed by voting rules
 - Early-to-Mail Ratio:tells us if more votes have been cast by
@@ -101,31 +101,31 @@ A ratio of 1 indicates that the number of votes cast by
 Early and Mail is about even; higher numbers indicate that
 more votes were cast by **Early Voting**, and lower numbers
 indicate greater Mail-in Voting numbers.
-- Total Votes by Mail: the sum of all **Mail Ballots Received**
+- Total.Votes by Mail: the sum of all **Mail.Ballots.Received**
 for all precincts.
-- Total Votes by Early Voting: the sum of all Early Votes
+- Total.Votes by Early Voting: the sum of all Early Votes
 for all precincts.
-- Total Votes: the sum of **Mail Ballots Received** and
+- Total.Votes: the sum of **Mail.Ballots.Received** and
 **Early Voting** for all precincts.
 - Voter Turnout and Active Voter Turnout: the difference between
 the two is a matter of what goes in the denominator:
-**Active Voter Turnout** takes only active registered voters
+**Active Voter Turnout** takes only Active.Registered voters
 (**active**, in the data) as the denominator, while **Voter Turnout**
-uses all registered voters (**all**, in the data) for this subterranean
-figure. In both cases, the numerator is **Total Votes**
+uses All.Registered voters (**all**, in the data) for this subterranean
+figure. In both cases, the numerator is **Total.Votes**
 - Mail Voter Turnout: This is simply the number of
-**(No. Mail Ballots Received) / (Active Registered Voters)**
+**(No. Mail.Ballots.Received) / (Active.Registered Voters)**
 - Early Voter Turnout: Similarly to the above, **(Early Voting) /
-(Active Registered Voters)**.
+(Active.Registered Voters)**.
 - Early-to-Mail Turnout Ratio: This is a measure of the extent to which
 Voter Turnout can be attributed to Early Voting Compared to Mail-in Voting,
 or **(Early Voter Turnout) / (Mail Voter Turnout)**. A ratio of 1.00
 means that Early Voting and Mail-in Voting contributed equal shares
-to the overall Active Turnout. A higher ratio indicates that a Early
+to the overall Active.Turnout. A higher ratio indicates that a Early
 Voting contributed a larger share of the (active) voter turnout compared
 to Mail-in Voting.
-- Percent Mail Counted: uses **Mail Ballots Received** as the denominator and the County-provided
-total of Mail ballots counted as the natural numerator.
+- Percent Mail Counted: uses **Mail.Ballots.Received** as the denominator and the County-provided
+total of Mail.Ballots.Counted as the natural numerator.
 
 ### Other Notes
 
@@ -143,16 +143,11 @@ stats tab. Conceptually, this means that, for each indicator seperately, the raw
 data is transformed such as the highest value in each indicator becomes 1 and the
 lowest value becomes zero. The code will reproduce this table for you as object
 **sp.norm**.
-- Jefferson Precinct: The Arlington Country GIS data indicate that the
-Jefferson Precinct, while considered a single precinct (No. 27),
-is split among two different Virginia House districts (Districts 47 and
-49). However, as the Arlington County Voting data does not disaggregate
-voting information by the two 'subsets' of the Jefferson district, for
-this application I have simply combined the two boundaries of the
-Jefferson House districts to form a single district consistent with the Arlington Voting Data.
 
 ## Data Sources
 This page was developed using publicly-available data, including:
 - Voting data from the Arlington County [Daily Turnout Reports](https://vote.arlingtonva.us/daily-turnout/)
-- [Voter Precinct Polygons](https://gisdata-arlgis.opendata.arcgis.com/datasets/voter-precinct-polygons)
 - [Voter Registration Numbers](https://arlingtonva.s3.amazonaws.com/wp-content/uploads/sites/3/2020/10/Registrant_Counts_By_Locality.pdf)
+- I have also referred to the [Voter Precinct Polygons](https://gisdata-arlgis.opendata.arcgis.com/datasets/voter-precinct-polygons) even though they are not used
+in this app.
+

@@ -250,35 +250,35 @@ assert_that( sum( (vote.data18$prec.early.turnout + vote.data18$prec.mail.turnou
 vote.data18 <- vote.data18 %>%
   rename(
     Precinct = precinct,
-    `Precinct Name` = prec_name,
-    `Mail Outstanding` = mail.outstanding,
-    `Mail Received` = mail.received,
-    `Early Voted` = early.voted,
-    `Active Registered` = active,
-    `Inactive Registered` = inactive,
-    `All Registered` = all,
+    `Precinct.Name` = prec_name,
+    `Mail.Outstanding` = mail.outstanding,
+    `Mail.Received` = mail.received,
+    `Early.Voted` = early.voted,
+    `Active.Registered` = active,
+    `Inactive.Registered` = inactive,
+    `All.Registered` = all,
     Military = military,
     Overseas = overseas,
     Federal = federal,
     # `VA House District` = house,
     # `VA Senate District` = senate,
     # `Polling Place` = polling_pl,
-    `Total Votes` = prec.tot.votes,
-    `Outstanding Votes` = prec.outstand.votes,
-    `Percent Outstanding Votes` = outstand.votes.pct,
-    `Mail Ballots Requested` = mail.request,
-    `Precinct Share of All Votes` =  prec.tot.votes.pct,
-    `Mail Ballot Return Rate` = mail.return.pct,
-    `Precinct Share of Early Votes` = early.voted.pct,
-    `Precinct Share of Oustanding Mail Votes` = mail.outstanding.pct,
-    `Precinct Share of Mail Ballots Received` = mail.received.pct,
-    `Early to Mail Ratio` = mail.early.ratio,
+    `Total.Votes` = prec.tot.votes,
+    `Outstanding.Votes` = prec.outstand.votes,
+    `Percent.Outstanding.Votes` = outstand.votes.pct,
+    `Mail.Ballots.Requested` = mail.request,
+    `Precinct.Share.of.All.Votes` =  prec.tot.votes.pct,
+    `Mail.Ballot.Return.Rate` = mail.return.pct,
+    `Precinct.Share.of.Early.Votes` = early.voted.pct,
+    `Precinct.Share.of.Oustanding.Mail.Votes` = mail.outstanding.pct,
+    `Precinct.Share.of.Mail.Ballots.Received` = mail.received.pct,
+    `Early.to.Mail.Ratio` = mail.early.ratio,
     Turnout = prec.cur.turnout,
-    `Active Turnout` = prec.act.turnout,
-    `Turnout by Mail` = prec.mail.turnout,
-    `Turnout by Early Voting` = prec.early.turnout,
-    `Early to Mail Turnout Ratio` =  mail.turnout.ratio,
-    `Mail Ballots Counted`  = counted
+    `Active.Turnout` = prec.act.turnout,
+    `Turnout.by.Mail` = prec.mail.turnout,
+    `Turnout.by.Early.Voting` = prec.early.turnout,
+    `Early.to.Mail.Turnout.Ratio` =  mail.turnout.ratio,
+    `Mail.Ballots.Counted`  = counted
   )
 
 
@@ -286,33 +286,33 @@ vote.data18 <- vote.data18 %>%
 ## first make a 2-row tibble with names of the main vote dataset
 arl <- tibble(
   Precinct = 0,
-  `Precinct Name` = "Arlington Totals",
-  `Mail Outstanding` = sum(vote.data18$`Mail Outstanding`),
-  `Mail Received` = sum(vote.data18$`Mail Received`),
-  `Early Voted` = sum(vote.data18$`Early Voted`),
-  `Active Registered` = sum(vote.data18$`Active Registered`),
-  `Inactive Registered` = sum(vote.data18$`Inactive Registered`),
-  `All Registered` = sum(vote.data18$`All Registered`),
+  `Precinct.Name` = "Arlington Totals",
+  `Mail.Outstanding` = sum(vote.data18$`Mail.Outstanding`),
+  `Mail.Received` = sum(vote.data18$`Mail.Received`),
+  `Early.Voted` = sum(vote.data18$`Early.Voted`),
+  `Active.Registered` = sum(vote.data18$`Active.Registered`),
+  `Inactive.Registered` = sum(vote.data18$`Inactive.Registered`),
+  `All.Registered` = sum(vote.data18$`All.Registered`),
   Military = sum(vote.data18$Military),
   Overseas = sum(vote.data18$Overseas),
   Federal = sum(vote.data18$Federal),
-  `Total Votes` = sum(vote.data18$`Total Votes`),
-  `Outstanding Votes` = sum(vote.data18$`Outstanding Votes`),
-  `Percent Outstanding Votes` = sum(vote.data18$`Percent Outstanding Votes`),
-  `Mail Ballots Requested` = sum(vote.data18$`Mail Ballots Requested`),
-  `Precinct Share of All Votes` =  100, # must be 100
-  `Mail Ballot Return Rate` = round( (sum(vote.data18$`Mail Received`) /
-                                        sum(vote.data18$`Mail Ballots Requested`)), 2),
-  `Precinct Share of Early Votes` = 100, # will be 100
-  `Precinct Share of Oustanding Mail Votes` = 100, # will be 100
-  `Precinct Share of Mail Ballots Received` = 100, # will be 100
-  `Early to Mail Ratio` = round((`Early Voted` / `Mail Received` ), 1),
-  Turnout = round( 100 * (`Total Votes`/`All Registered`), 1),
-  `Active Turnout` = round( 100 * (`Total Votes`/`Active Registered`), 1),
-  `Turnout by Mail` = round( 100 * (`Mail Received`/`Active Registered`), 1),
-  `Turnout by Early Voting` = round( 100 * (`Early Voted`/`Active Registered`), 1),
-  `Early to Mail Turnout Ratio` =  round((`Turnout by Early Voting`/`Turnout by Mail`),1),
-  `Mail Ballots Counted`  = sum(vote.data18$`Mail Ballots Counted`),
+  `Total.Votes` = sum(vote.data18$`Total.Votes`),
+  `Outstanding.Votes` = sum(vote.data18$`Outstanding.Votes`),
+  `Percent.Outstanding.Votes` = sum(vote.data18$`Percent.Outstanding.Votes`),
+  `Mail.Ballots.Requested` = sum(vote.data18$`Mail.Ballots.Requested`),
+  `Precinct.Share.of.All.Votes` =  100, # must be 100
+  `Mail.Ballot.Return.Rate` = round( (sum(vote.data18$`Mail.Received`) /
+                                        sum(vote.data18$`Mail.Ballots.Requested`)), 2),
+  `Precinct.Share.of.Early.Votes` = 100, # will be 100
+  `Precinct.Share.of.Oustanding.Mail.Votes` = 100, # will be 100
+  `Precinct.Share.of.Mail.Ballots.Received` = 100, # will be 100
+  `Early.to.Mail.Ratio` = round((`Early.Voted` / `Mail.Received` ), 1),
+  Turnout = round( 100 * (`Total.Votes`/`All.Registered`), 1),
+  `Active.Turnout` = round( 100 * (`Total.Votes`/`Active.Registered`), 1),
+  `Turnout.by.Mail` = round( 100 * (`Mail.Received`/`Active.Registered`), 1),
+  `Turnout.by.Early.Voting` = round( 100 * (`Early.Voted`/`Active.Registered`), 1),
+  `Early.to.Mail.Turnout.Ratio` =  round((`Turnout.by.Early.Voting`/`Turnout.by.Mail`),1),
+  `Mail.Ballots.Counted`  = sum(vote.data18$`Mail.Ballots.Counted`),
   date      = lubridate::as_date(ymd("2020-10-18"))
 )
 
@@ -325,23 +325,23 @@ vote.data18 <- bind_rows(vote.data18, arl)
 
 
 # run check script ----
-# sum of total votes == given sum of total votes
-assert_that(arl$`Total Votes`[1] == totals.tib$total.voted[1])
+# sum of Total.Votes == given sum of Total.Votes
+assert_that(arl$`Total.Votes`[1] == totals.tib$total.voted[1])
 
-# sum of early voted == given sum of early votes
-assert_that(arl$`Early Voted`[1] == totals.tib$early.voted[1]) 
+# sum of Early.Voted == given sum of early votes
+assert_that(arl$`Early.Voted`[1] == totals.tib$early.voted[1]) 
 
-# sum of total mail == given sum of total mail ballots requested 
-assert_that(sum(arl$`Mail Ballots Requested`[1] + e.totmail18) == totals.tib$total.mail[1]) # 101 undercount
+# sum of total mail == given sum of total Mail.Ballots.Requested 
+assert_that(sum(arl$`Mail.Ballots.Requested`[1] + e.totmail18) == totals.tib$total.mail[1]) # 101 undercount
 
 # sum of total counted == given sum of total counted 
-assert_that(sum(arl$`Mail Ballots Counted`[1]) == totals.tib$counted[1])
+assert_that(sum(arl$`Mail.Ballots.Counted`[1]) == totals.tib$counted[1])
 
-# sum of total mail received == given sum of received + given sum of counted 
-assert_that( sum(arl$`Mail Received`[1]) == (totals.tib$received[1] + totals.tib$counted[1] ) )
+# sum of total Mail.Received == given sum of received + given sum of counted 
+assert_that( sum(arl$`Mail.Received`[1]) == (totals.tib$received[1] + totals.tib$counted[1] ) )
 
 # sum of total outstanding mail votes == given sum of "outstanding" (or "mailed" as imported)
-assert_that((sum(arl$`Mail Outstanding`[1]) + e.outstanding18) == totals.tib$mailed[1]) # 101 off undercount
+assert_that((sum(arl$`Mail.Outstanding`[1]) + e.outstanding18) == totals.tib$mailed[1]) # 101 off undercount
 
 # assert that there are 54 precincts
 assert_that(nrow(vote.data18) == nrow )

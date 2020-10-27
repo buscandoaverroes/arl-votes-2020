@@ -4,9 +4,9 @@
 # ---  --- --- --- --- --- --- --- --- --- --- --- --- #
 
 
-polarvars <- c("Precinct Name", "Active Turnout", 
-               "Mail Ballot Return Rate", "Early to Mail Ratio" , "Mail Ballots Requested",
-               "Outstanding Votes", "Total Votes" )
+polarvars <- c("Precinct.Name", "Active.Turnout", 
+               "Mail.Ballot.Return.Rate", "Early.to.Mail.Ratio" , "Mail.Ballots.Requested",
+               "Outstanding.Votes", "Total.Votes" )
 
 
 
@@ -231,25 +231,25 @@ scatterpolar <- vote.data[vote.data$date %in% latestdate,] %>%
  # st_drop_geometry() %>%
   select(polarvars) %>%
   as.data.frame() %>%
-  filter(`Precinct Name` != "Arlington Totals") # remove totals here since we create below
+  filter(`Precinct.Name` != "Arlington Totals") # remove totals here since we create below
 
-scatterpolar$`Precinct Name` <-  as.character(scatterpolar$`Precinct Name`)
+scatterpolar$`Precinct.Name` <-  as.character(scatterpolar$`Precinct.Name`)
 
 # create averages 
 scatterpolar <- scatterpolar %>%
   rbind( c( "Arlington Average",
-            round(mean(scatterpolar$`Active Turnout`), 0),
-            round(mean(scatterpolar$`Mail Ballot Return Rate`), 2), 
-            round(mean(scatterpolar$`Early to Mail Ratio`), 1),
-            round(mean(scatterpolar$`Mail Ballots Requested`), 0), 
-            round(mean(scatterpolar$`Outstanding Votes`), 0 ),
-            round(mean(scatterpolar$`Total Votes`), 0) )) %>%
-  convert(num(c("Active Turnout", "Mail Ballot Return Rate", "Early to Mail Ratio", "Mail Ballots Requested", 
-                "Outstanding Votes", "Total Votes"))) 
+            round(mean(scatterpolar$`Active.Turnout`), 0),
+            round(mean(scatterpolar$`Mail.Ballot.Return.Rate`), 2), 
+            round(mean(scatterpolar$`Early.to.Mail.Ratio`), 1),
+            round(mean(scatterpolar$`Mail.Ballots.Requested`), 0), 
+            round(mean(scatterpolar$`Outstanding.Votes`), 0 ),
+            round(mean(scatterpolar$`Total.Votes`), 0) )) %>%
+  convert(num(c("Active.Turnout", "Mail.Ballot.Return.Rate", "Early.to.Mail.Ratio", "Mail.Ballots.Requested", 
+                "Outstanding.Votes", "Total.Votes"))) 
 
 arlav  <- scatterpolar %>% 
-  filter(`Precinct Name` == "Arlington Average") %>% 
-  select(-`Precinct Name`) %>%
+  filter(`Precinct.Name` == "Arlington Average") %>% 
+  select(-`Precinct.Name`) %>%
   as.vector() %>%
   gather()
 
@@ -264,7 +264,7 @@ sp.norm <- scatterpolar %>%
 
 
 # create misc values 
-arl.tot <- vote.data[vote.data$`Precinct Name` %in% "Arlington Totals",] %>%
+arl.tot <- vote.data[vote.data$`Precinct.Name` %in% "Arlington Totals",] %>%
   filter(date == latestdate)
 
 
@@ -279,8 +279,7 @@ if (export == 1) {
   # save local copy
 save(
   vote.data,
-  vote.methods,
-  vote.turnout,
+  arl.tot,
   sp.norm,
   arl.tot,
   file = file.path(root.data, "rdata/arl-vote2020.Rdata")
@@ -289,9 +288,9 @@ save(
   #also save copy to app 
 save(
   vote.data,
-  vote.methods,
-  vote.turnout,
+  arl.tot,
   sp.norm,
+  arl.tot,
   file = file.path(app, "data/arl-vote2020.Rdata")
 )
   
