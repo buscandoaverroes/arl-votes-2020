@@ -156,9 +156,17 @@ ui <- navbarPage(
             fluidRow(
                     valueBox(paste0(arl.tot$Active.Turnout, '%'), 'Estimated Turnout', width = 4, color = 'yellow'),
                     valueBox(prettyNum(arl.tot$Total.Votes, big.mark = ','),
-                             'Total.Votes', width = 4, color = 'yellow'),
+                             'Total Votes', width = 4, color = 'yellow'),
                     valueBox(up.date, "Data Update", color = 'fuchsia'),tags$br(),tags$br()),
-            fluidRow(tags$br(),tags$br(),plotlyOutput('timeline1', width = '100%', height = '300px')),
+            
+            tags$h2("Voting Statistics Over Time"),
+            tags$h5("Select the indicator to plot in the draggable box to the right."),
+            tags$h5("Single- or double-click a precinct in the legend to toggle the selected precinct or
+                    the rest."),
+            tags$br(),
+            
+            
+            fluidRow(tags$br(),tags$br(),plotlyOutput('timeline1', width = '100%', height = '400px')),
             fluidRow(tags$br(),plotlyOutput('timeline2', width = '100%', height = '400px')),
 
 
@@ -166,9 +174,9 @@ ui <- navbarPage(
               absolutePanel(
                 id    = 'controlpanel1',
                 #class = "panel panel-default",
-                bottom = 270,
-                right  = 10,
-                width  = 170,
+                top   = 200,
+                right  = 30,
+                width  = 230,
                 fixed  = FALSE,
                 draggable = TRUE,
                 height = 'auto',
@@ -177,14 +185,14 @@ ui <- navbarPage(
 
                 wellPanel(
 
-                  HTML(
-                    markdownToHTML(fragment.only = TRUE,
-                                   text = c("Select, then move panel"))
-                  ),
+                  # HTML(
+                  #   markdownToHTML(fragment.only = TRUE,
+                  #                  text = c("Select, then move panel"))
+                  # ),
 
                   pickerInput(
                     'timeline.in1',
-                    "Indicator",
+                    "Plot:",
                     choices = arltotalvars,
                     selected = "Total.Votes",
                     multiple = FALSE,
@@ -446,12 +454,12 @@ ui <- navbarPage(
               ),
 
             tags$h2("On Interpretation"),
-            tags$h6("Normalization transforms each dimension independently such that highest value in the data
+            tags$h6("Normalization transforms each dimension independently such that highest value in that dimension
                     is 1 and the lowest value is zero.
                     Normalized numbers facilitate comparison across precincts and indicators; but they are not the raw
-                    data. It's important to know how to interpret a single point.
+                    data -- so it's important to know what a single point actually means in this format.
                     If, for example, Abigndon had a value of 0.6 for Voter Turnout, you could interpret this as: "),
-              tags$h6(tags$i("Abigdon's voter turnout is about 60% of the highest Voter Turnout rate.")),
+              tags$h6(tags$i("Abigdon's voter turnout is about 60% of the highest Voter Turnout rate of all precincts.")),
             tags$h6("However, the polygon points are best analyzed holistically with other precincts.
                     Abingdon's relative score on all six dimensions compared to those in another precinct may indicate
                     differences in aggregate patterns across geography.")
@@ -506,6 +514,7 @@ server <- function(input, output, session) {
                     y =  eval(as.name(t1.in() )) )) + # input$timeline.in1
     geom_line(aes(color = Precinct.Name)) +
     geom_point(aes(color = Precinct.Name)) + 
+    geom_area(alpha = 0.1, fill = '#ffa500') +
     scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.5)) ) +
     scale_x_date(labels = date_format("%d-%b"), breaks = unique(vote$date)) +
     labs(color = "Precinct", y = "", x = "Date") +
@@ -515,7 +524,7 @@ server <- function(input, output, session) {
   ggplotly(t1) %>%
     layout(
       title = list(
-        text = "Totals for Arlington County",
+        text = "Arlington County Overall",
         y = 0.98
       ),
       xaxis = list(
@@ -549,7 +558,7 @@ server <- function(input, output, session) {
   ggplotly(t2)  %>%
     layout(
       title = list(
-        text= "Voting Totals by Precinct",
+        text= "By Precinct",
         y = 0.95,
         hovertemplate = ht.timeline
         
