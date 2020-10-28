@@ -1,14 +1,14 @@
 # arl-votes-2020
-A application that tracks publicly-available voting data for Arlington County, VA. This app is a work in progress, and I will continue to publish new features and updates to the data as they become available. The Arlington County website that posts daily is currently down, so for the time being I am posting the lastest data I have.
+A application that tracks publicly-available voting data for Arlington County, VA. This app is a work in progress, and I will continue to publish new features and updates to the data as they become available. 
 
 # About Arlington Votes 2020
 This app is intended as a public good to
 visualize open voting data to all residents of Arlington County,
 Virginia and to the general public at large. As voting is
 fundamental right and responsibility in all democratic republics
-around the world, everyone -- regardless of voting eligability or status --
-should have access to the data that is already made availabile by public entities and
-that data should transparently presented, human-intelligable, and anonymous. As such,
+around the world, everyone should have access to the data that 
+is already made availabile by public entities and
+this data should transparently presented, human-intelligable, and anonymous. As such,
 this project is run independently and is not affiliated with Arlington County in any
 capacity.
 
@@ -32,7 +32,7 @@ please refer to the links below to get the voting tallies etc,
 from their respective sources.<br>
 
 # About the Data
-All data are updated within ~48 hours from from Arlington Country Government and
+I try to update all data within ~48 hours from from Arlington Country Government and
 Department of Elections. As of now, the voting data are published by
 Arlington County in pdf form, which means that they can't easily be
 read by a computer. This leaves two options: copy and paste the data
@@ -40,10 +40,13 @@ manually into a spreadsheet, or use packages that can read and process
 the data. While both are prone to different types of errors, I have
 opted for the latter since it is entirely reproducible if you have
 the data and my R code. This way if I or the computer make a mistake
-in 'translating' the data from pdf to R, you can see exactly what I
+in "translating" the data from pdf to R, you can see exactly what I
 did and improve it. The voting data are published sort-of-daily by
 Arlington, so I upload the most recent document and tell you the
-date on the splash page. Voter registration data is also public
+date on the splash page. Note that sometimes Arlington releases documents 
+with files names that conflict with the report date generated on the document 
+itself; however, the dates I use always refer to the date on the actual raw document.
+The registration data is also public
 and was last updated on 1 October, 2020. The data that define the
 precinct geographic boundaries and names come from Arlington County;
 the files were updated last on 24 September, 2020, although they are not used in
@@ -74,13 +77,13 @@ the files were updated last on 24 September, 2020.
 ### Terms and Definitions
 
 Arlington County provides figures for how many registered and active
-voters are in each precinct. The information I use in this project was
+voters are in each precinct, and the document I used was 
 last updated on the first day of October, 2020, so we can assume this
 data is quite accurate for the 2020 election cycle. <br>
 
 Arlington County provides voting data by precinct, with name and
 precinct code. The voting data come in the form of three columns
-or variables: **Mail Ballots Outstanding**, **Mail.Ballots.Received**,
+or variables: **Mail Ballots Outstanding**, **Mail Ballots Received**,
 and **Early Voting**.
 
 ### About the Terms I Use
@@ -88,8 +91,8 @@ and **Early Voting**.
 only indicate the number of ballots received and outstanding;
 it can be reasonably assumed that the total number of ballots
 requested is the sum of these two numbers, which is how I compute it.
-- Mail.Ballot.Return.Rate: is simply **(No. Mail Ballots Receieved)
-/ (No. Mail.Ballots.Requested)**. The data do not allow us to discen
+- Mail Ballot Return Rate: is simply **(No. Mail Ballots Receieved)
+/ (No. Mail Ballots Requested)**. The data do not allow us to discen
 if voters who requested a mail ballot have voted early in lieu of
 voting by mail, which is allowed by voting rules
 - Early-to-Mail Ratio:tells us if more votes have been cast by
@@ -99,31 +102,31 @@ A ratio of 1 indicates that the number of votes cast by
 Early and Mail is about even; higher numbers indicate that
 more votes were cast by **Early Voting**, and lower numbers
 indicate greater Mail-in Voting numbers.
-- Total.Votes by Mail: the sum of all **Mail.Ballots.Received**
+- Total Votes by Mail: the sum of all **Mail Ballots Received**
 for all precincts.
-- Total.Votes by Early Voting: the sum of all Early Votes
+- Total Votes by Early Voting: the sum of all Early Votes
 for all precincts.
-- Total.Votes: the sum of **Mail.Ballots.Received** and
+- Total Votes: the sum of **Mail Ballots Received** and
 **Early Voting** for all precincts.
 - Voter Turnout and Active Voter Turnout: the difference between
 the two is a matter of what goes in the denominator:
-**Active Voter Turnout** takes only Active.Registered voters
+**Active Voter Turnout** takes only Active Registered voters
 (**active**, in the data) as the denominator, while **Voter Turnout**
-uses All.Registered voters (**all**, in the data) for this subterranean
-figure. In both cases, the numerator is **Total.Votes**
+uses All Registered voters (**all**, in the data) for this subterranean
+figure. In both cases, the numerator is **Total Votes**
 - Mail Voter Turnout: This is simply the number of
-**(No. Mail.Ballots.Received) / (Active.Registered Voters)**
+**(No. Mail Ballots Received) / (Active Registered Voters)**
 - Early Voter Turnout: Similarly to the above, **(Early Voting) /
-(Active.Registered Voters)**.
+(Active Registered Voters)**.
 - Early-to-Mail Turnout Ratio: This is a measure of the extent to which
 Voter Turnout can be attributed to Early Voting Compared to Mail-in Voting,
 or **(Early Voter Turnout) / (Mail Voter Turnout)**. A ratio of 1.00
 means that Early Voting and Mail-in Voting contributed equal shares
-to the overall Active.Turnout. A higher ratio indicates that a Early
+to the overall Active Turnout. A higher ratio indicates that a Early
 Voting contributed a larger share of the (active) voter turnout compared
 to Mail-in Voting.
-- Percent Mail Counted: uses **Mail.Ballots.Received** as the denominator and the County-provided
-total of Mail.Ballots.Counted as the natural numerator.
+- Percent Mail Counted: uses **Mail Ballots Received** as the denominator and the County-provided
+total of Mail Ballots Counted as the natural numerator.
 
 ### Other Notes
 

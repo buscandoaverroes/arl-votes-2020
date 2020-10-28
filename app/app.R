@@ -21,12 +21,18 @@ library(scales)
 load("data/arl-vote2020.Rdata")
 
 
+
+
+# update
+up.date <- "26 Oct, 2020"
+date.data <- "2020-10-26"
+
+
 vote <- vote.data
 vote.pr <- vote %>%
   filter(Precinct.Name != "Arlington Totals")
-
-# update
-up.date <- "17 Oct, 2020"
+vote.tot <- vote %>%
+  filter(Precinct.Name == "Arlington Totals" & date == date.data)
 
 
 
@@ -105,9 +111,8 @@ ht.polar <- paste("%{theta}",
                   "<br>Normalized Value: %{r:.2f}")
 
 # hovertext settings
-ht.timeline <- paste(# "%{Precinct.Name}",
-                  "<br>As of: %{x}",
-                  "<br>%{y:.1f}")
+ht.timeline <- paste("%{x}",
+                     "<br>%{y:.1f}") #  <extra></extra>
 
 
 
@@ -154,15 +159,14 @@ ui <- navbarPage(
           "Timeline",
           fluidPage(
             fluidRow(
-                    valueBox(paste0(arl.tot$Active.Turnout, '%'), 'Estimated Turnout', width = 4, color = 'yellow'),
-                    valueBox(prettyNum(arl.tot$Total.Votes, big.mark = ','),
+                    valueBox(paste0(vote.tot$Active.Turnout, '%'), 'Latest Estimated Turnout', width = 4, color = 'yellow'),
+                    valueBox(prettyNum(vote.tot$Total.Votes, big.mark = ','),
                              'Total Votes', width = 4, color = 'yellow'),
                     valueBox(up.date, "Data Update", color = 'fuchsia'),tags$br(),tags$br()),
             
             tags$h2("Voting Statistics Over Time"),
-            tags$h5("Select the indicator to plot in the draggable box to the right."),
-            tags$h5("Single- or double-click a precinct in the legend to toggle the selected precinct or
-                    the rest."),
+            tags$body("Select a stat or highlight precincts by 
+                      single/double-clicking names in the legend."),
             tags$br(),
             
             
@@ -175,7 +179,7 @@ ui <- navbarPage(
                 id    = 'controlpanel1',
                 #class = "panel panel-default",
                 top   = 200,
-                right  = 30,
+                right  = 25,
                 width  = 230,
                 fixed  = FALSE,
                 draggable = TRUE,
@@ -351,7 +355,7 @@ ui <- navbarPage(
           "Stats",
           fluidPage(
             tags$h2("Key Voting Statistics by Precinct"),
-            tags$h5("Select up to three precincts to display normalized statistics; drag panel if necessary. Click on the precinct
+            tags$body("Select up to three precincts to display normalized statistics; drag panel if necessary. Click on the precinct
                     names in the legend to toggle individual polygons."),
             tags$br(),
 
@@ -454,13 +458,15 @@ ui <- navbarPage(
               ),
 
             tags$h2("On Interpretation"),
-            tags$h6("Normalization transforms each dimension independently such that highest value in that dimension
+            tags$body("Normalization transforms each dimension independently such that highest value in that dimension
                     is 1 and the lowest value is zero.
                     Normalized numbers facilitate comparison across precincts and indicators; but they are not the raw
                     data -- so it's important to know what a single point actually means in this format.
                     If, for example, Abigndon had a value of 0.6 for Voter Turnout, you could interpret this as: "),
-              tags$h6(tags$i("Abigdon's voter turnout is about 60% of the highest Voter Turnout rate of all precincts.")),
-            tags$h6("However, the polygon points are best analyzed holistically with other precincts.
+            tags$br(),  tags$br(),
+              tags$body(tags$i("Abingdon's voter turnout is about 60% of the highest Voter Turnout rate of all precincts.")),
+            tags$br(), tags$br(),
+            tags$body("However, the polygon points are best analyzed holistically with other precincts.
                     Abingdon's relative score on all six dimensions compared to those in another precinct may indicate
                     differences in aggregate patterns across geography.")
 
@@ -504,33 +510,36 @@ server <- function(input, output, session) {
 
   ## reactive values
   t1.in <- reactive({ input$timeline.in1 })
-
+  t1.in.lab <- reactive({ str_replace_all(input$timeline.in1, "\\.", " ") })
 
   output$timeline1 <- renderPlotly({
     
   t1 <-  
     ggplot(vote[vote$Precinct.Name %in% "Arlington Totals",], 
                 aes(x = date, 
-                    y =  eval(as.name(t1.in() )) )) + # input$timeline.in1
+                    y =  eval(as.name(t1.in() )),
+                    )) + # input$timeline.in1
     geom_line(aes(color = Precinct.Name)) +
     geom_point(aes(color = Precinct.Name)) + 
     geom_area(alpha = 0.1, fill = '#ffa500') +
     scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.5)) ) +
     scale_x_date(labels = date_format("%d-%b"), breaks = unique(vote$date)) +
-    labs(color = "Precinct", y = "", x = "Date") +
+    labs(color = "Precinct", y = t1.in.lab(), x = "Date") +
+   # theme(axis.text.x = element_text(angle = -45)) +
     theme_classic() 
     
 
   ggplotly(t1) %>%
     layout(
       title = list(
-        text = "Arlington County Overall",
+        text = paste("Arlington Overall:", t1.in.lab() ),
         y = 0.98
       ),
       xaxis = list(
         title = list(
           text = "Date"
-        )
+        ),
+        tickangle = 45
       ),
       legend = list(
         title = "Precinct",
@@ -541,8 +550,12 @@ server <- function(input, output, session) {
     ) %>%
     style(
       hovertemplate = ht.timeline
+    ) %>%
+    config(
+      displayModeBar = FALSE
     )
-  })
+  
+  }) # end render plotly
 
   output$timeline2 <- renderPlotly({
   t2 <-  
@@ -552,13 +565,13 @@ server <- function(input, output, session) {
     geom_point(aes(color = Precinct.Name)) +
     scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.5)) ) +
     scale_x_date(labels = date_format("%d-%b"), breaks = unique(vote$date)) +
-    labs(color = "Precinct", y = "", x = "Date") +
+    labs(color = "Precinct", y = t1.in.lab(), x = "Date") +
     theme_classic() 
 
   ggplotly(t2)  %>%
     layout(
       title = list(
-        text= "By Precinct",
+        text= paste("By Precinct:", t1.in.lab() ),
         y = 0.95,
         hovertemplate = ht.timeline
         
@@ -566,7 +579,8 @@ server <- function(input, output, session) {
       xaxis = list(
         title = list(
           text = "Date"
-        )
+        ),
+        tickangle = 45
       ),
       legend = list(
         title = "Precinct",
@@ -577,6 +591,9 @@ server <- function(input, output, session) {
     ) %>%
     style(
       hovertemplate = ht.timeline
+    ) %>%
+    config(
+      displayModeBar = FALSE
     )
   })
 

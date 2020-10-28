@@ -204,11 +204,23 @@ source(file = file.path(root.code, "code/votes-12-oct.R"))
 vote18oct <- readRDS(file = file.path(votes, "18-oct.Rda"))
 vote15oct <- readRDS(file = file.path(votes, "15-oct.Rda"))
 vote12oct <- readRDS(file = file.path(votes, "12-oct.Rda"))
+vote19oct <- readRDS(file = file.path(votes, "19-oct.Rda"))
+#vote21oct <- readRDS(file = file.path(votes, "21-oct.Rda")) #document error?
+vote22oct <- readRDS(file = file.path(votes, "22-oct.Rda")) 
+vote23oct <- readRDS(file = file.path(votes, "23-oct.Rda"))
+vote25oct <- readRDS(file = file.path(votes, "25-oct.Rda"))
+vote26oct <- readRDS(file = file.path(votes, "26-oct.Rda"))
 
 
 # append all 
 vote.data <- 
-  bind_rows(vote18oct,
+  bind_rows(vote26oct,
+            vote25oct,
+            vote23oct,
+            vote22oct,
+           # vote21oct,
+            vote19oct, 
+            vote18oct,
             vote15oct,
             vote12oct)
 
