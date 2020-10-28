@@ -1,12 +1,12 @@
 # arl-votes-2020
-A application that tracks publicly-available voting data for Arlington County, VA. This app is a work in progress, and I will continue to publish new features and updates to the data as they become available. 
+A application that tracks publicly-available voting data for Arlington County, VA. This app is a work in progress, and I will continue to publish new features and updates to the data as they become available.
 
 # About Arlington Votes 2020
 This app is intended as a public good to
 visualize open voting data to all residents of Arlington County,
 Virginia and to the general public at large. As voting is
 fundamental right and responsibility in all democratic republics
-around the world, everyone should have access to the data that 
+around the world, everyone should have access to the data that
 is already made availabile by public entities and
 this data should transparently presented, human-intelligable, and anonymous. As such,
 this project is run independently and is not affiliated with Arlington County in any
@@ -16,7 +16,7 @@ capacity.
 You can write me at buscandoaverroes@icloud.com or contribute to the code on [GitHub](https://github.com/buscandoaverroes/arl-votes-2020).
 
 ## Viewing
-The app link is [here](). <br>
+The app link is here: https://buscandoaverroes.shinyapps.io/ArlVotes2020. <br>
 
 ## Using and Citing
 I've designed this as a tool for public use and reference.
@@ -26,7 +26,7 @@ meaning that you can almost do whatever you want with my work
 as long as you keep this license with whatever you do. <br><br>
 However the voting data and voting precinct data are not mine and
 you shouldn't claim them as yours either. They come with their own rules
-and licences, which I have actually taken care to find and read. 
+and licences, which I have actually taken care to find and read.
 As I do not intend to redistribute the County's data,
 please refer to the links below to get the voting tallies etc,
 from their respective sources.<br>
@@ -43,14 +43,14 @@ the data and my R code. This way if I or the computer make a mistake
 in "translating" the data from pdf to R, you can see exactly what I
 did and improve it. The voting data are published sort-of-daily by
 Arlington, so I upload the most recent document and tell you the
-date on the splash page. Note that sometimes Arlington releases documents 
-with files names that conflict with the report date generated on the document 
+date on the splash page. Note that sometimes Arlington releases documents
+with files names that conflict with the report date generated on the document
 itself; however, the dates I use always refer to the date on the actual raw document.
 The registration data is also public
 and was last updated on 1 October, 2020. The data that define the
 precinct geographic boundaries and names come from Arlington County;
 the files were updated last on 24 September, 2020, although they are not used in
-the current version of this app. 
+the current version of this app.
 
 
 ## Is This Data Actually Accurate?
@@ -77,7 +77,7 @@ the files were updated last on 24 September, 2020.
 ### Terms and Definitions
 
 Arlington County provides figures for how many registered and active
-voters are in each precinct, and the document I used was 
+voters are in each precinct, and the document I used was
 last updated on the first day of October, 2020, so we can assume this
 data is quite accurate for the 2020 election cycle. <br>
 
@@ -147,8 +147,9 @@ lowest value becomes zero. The code will reproduce this table for you as object
 
 ## Data Sources
 This page was developed using publicly-available data, including:
-- Voting data from the Arlington County [Daily Turnout Reports](https://vote.arlingtonva.us/daily-turnout/)
+- Voting data from the Arlington County: Note that Arlington has changed their website recently so I'm posting the links to both the old and new daily turnout reports:
+	- [Daily Turnout Reports - Old](https://vote.arlingtonva.us/daily-turnout/)
+	- [Daily Turnout Reports - New](https://vote.arlingtonva.us/Vote-by-Mail/Daily-Turnout)
 - [Voter Registration Numbers](https://arlingtonva.s3.amazonaws.com/wp-content/uploads/sites/3/2020/10/Registrant_Counts_By_Locality.pdf)
 - I have also referred to the [Voter Precinct Polygons](https://gisdata-arlgis.opendata.arcgis.com/datasets/voter-precinct-polygons) even though they are not used
 in this app.
-
