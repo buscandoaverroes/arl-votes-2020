@@ -24,8 +24,8 @@ load("data/arl-vote2020.Rdata")
 
 
 # update
-up.date <- "26 Oct, 2020"
-date.data <- "2020-10-26"
+up.date <- "27 Oct, 2020"
+date.data <- "2020-10-27"
 
 
 vote <- vote.data
@@ -78,7 +78,7 @@ heatmapvars <- c("Total.Votes", "Mail.Received", "Early.Voted",
 
 
 
-pop.filter <- vote[vote$date %in% "2020-10-18",] %>%
+pop.filter <- vote[vote$date %in% "2020-10-27",] %>%
   select(popupvars)
 
 # # forheatmap
@@ -165,96 +165,41 @@ ui <- navbarPage(
                     valueBox(up.date, "Data Update", color = 'fuchsia'),tags$br(),tags$br()),
             
             tags$h2("Voting Statistics Over Time"),
-            tags$body("Select a stat or highlight precincts by 
-                      single/double-clicking names in the legend."),
-            tags$br(),
+            tags$body("Select a stat from the dropdown to plot for Arlington Overall and by Precinct. Since the 
+                      by-Precinct Graph can get crowded, you can
+                      zoom in by clicking and dragging on the plot area, or alternatively highlight precincts
+                      by single- or double-clicking names in the legend below."),
+            tags$br(), tags$br(),
+            fluidRow(   
+              column(12, align = 'center',
+                     # timeline input panel ----
+                     pickerInput(
+                       'timeline.in1',
+                       "Plot:",
+                       choices = arltotalvars,
+                       selected = "Total.Votes",
+                       multiple = FALSE,
+                       width = '350px',
+                       inline = TRUE,
+                       options = list(
+                         liveSearch = TRUE,
+                         liveSearchNormalize = TRUE,
+                         liveSearchStyle = 'contains',
+                         selectOnTab = TRUE,
+                         showTick = TRUE,
+                         title = "Title",
+                         virtualScroll = TRUE,
+                         width = 'auto',
+                         dropupAuto = TRUE
+                       )
+                     )
+             
+            )),
             
             
             fluidRow(tags$br(),tags$br(),plotlyOutput('timeline1', width = '100%', height = '400px')),
             fluidRow(tags$br(),plotlyOutput('timeline2', width = '100%', height = '400px')),
 
-
-              # timeline input panel ----
-              absolutePanel(
-                id    = 'controlpanel1',
-                #class = "panel panel-default",
-                top   = 200,
-                right  = 25,
-                width  = 230,
-                fixed  = FALSE,
-                draggable = TRUE,
-                height = 'auto',
-                cursor = "move",
-                style = "opacity: 0.9",
-
-                wellPanel(
-
-                  # HTML(
-                  #   markdownToHTML(fragment.only = TRUE,
-                  #                  text = c("Select, then move panel"))
-                  # ),
-
-                  pickerInput(
-                    'timeline.in1',
-                    "Plot:",
-                    choices = arltotalvars,
-                    selected = "Total.Votes",
-                    multiple = FALSE,
-                    width = 'auto',
-                    options = list(
-                      liveSearch = TRUE,
-                      liveSearchNormalize = TRUE,
-                      liveSearchStyle = 'contains',
-                      selectOnTab = TRUE,
-                      showTick = TRUE,
-                      title = "Title",
-                      virtualScroll = TRUE,
-                      width = 'auto',
-                      dropupAuto = TRUE
-                    )
-                  )
-
-                  # pickerInput( # ----
-                  #   'timeline.in2',
-                  #   choices = sort(unique(vote$Precinct.Name)),
-                  #   selected = "Abingdon",
-                  #   multiple = FALSE,
-                  #   width = 'auto',
-                  #   options = list(
-                  #     liveSearch = TRUE,
-                  #     liveSearchNormalize = TRUE,
-                  #     liveSearchStyle = 'contains',
-                  #     selectOnTab = TRUE,
-                  #     showTick = TRUE,
-                  #     title = "Title",
-                  #     virtualScroll = TRUE,
-                  #     width = 'auto',
-                  #     dropupAuto = TRUE
-                  #   )
-                  # ),
-                  #
-                  #   pickerInput(
-                  #   'timeline.in3',
-                  #   choices = sort(unique(vote$Precinct.Name)),
-                  #   selected = "Ballston",
-                  #   multiple = FALSE,
-                  #   width = 'auto',
-                  #   options = list(
-                  #     liveSearch = TRUE,
-                  #     liveSearchNormalize = TRUE,
-                  #     liveSearchStyle = 'contains',
-                  #     selectOnTab = TRUE,
-                  #     showTick = TRUE,
-                  #     title = "Title",
-                  #     virtualScroll = TRUE,
-                  #     width = 'auto',
-                  #     dropupAuto = TRUE
-                  #   )
-                  # ),
-
-
-                ) # end wellpanel
-              ) # end absolute panel
 
           ) # end fluidpage
 
@@ -355,107 +300,125 @@ ui <- navbarPage(
           "Stats",
           fluidPage(
             tags$h2("Key Voting Statistics by Precinct"),
-            tags$body("Select up to three precincts to display normalized statistics; drag panel if necessary. Click on the precinct
-                    names in the legend to toggle individual polygons."),
-            tags$br(),
+            tags$body("Select up to three precincts to display normalized statistics. Clicking on the precinct
+                    names in the legend will toggle individual polygons."),
+            tags$br(), 
+            fluidRow(
+              
+              column(4, align = 'center',
+              pickerInput(
+                'stat.in1',
+                label = "Polygon 1",
+                choices = sort(unique(sp.norm$Precinct.Name)),
+                selected = "Arlington Average",
+                multiple = FALSE,
+                width = '200px',
+                options = list(
+                  liveSearch = TRUE,
+                  liveSearchNormalize = TRUE,
+                  liveSearchStyle = 'contains',
+                  selectOnTab = TRUE,
+                  showTick = TRUE,
+                  title = "Title",
+                  virtualScroll = TRUE,
+                  width = 'auto',
+                  dropupAuto = TRUE,
+                  mobile = TRUE
+                )
+              )
+              ),
+              
+              column(4, align = 'center',
+              pickerInput(
+                'stat.in2',
+                label = "Polygon 2",
+                choices = sort(unique(sp.norm$Precinct.Name)),
+                selected = "Abingdon",
+                multiple = FALSE,
+                width = '200px',
+                options = list(
+                  liveSearch = TRUE,
+                  liveSearchNormalize = TRUE,
+                  liveSearchStyle = 'contains',
+                  selectOnTab = TRUE,
+                  showTick = TRUE,
+                  title = "Title",
+                  virtualScroll = TRUE,
+                  width = 'auto',
+                  dropupAuto = TRUE,
+                  mobile = TRUE
+                )
+                )
+              ),
+              
+              
+              column(4, align = 'center',
+              pickerInput(
+                'stat.in3',
+                label = "Polygon 3",
+                choices = sort(unique(sp.norm$Precinct.Name)),
+                selected = "Ballston",
+                multiple = FALSE,
+                width = '200px',
+                options = list(
+                  liveSearch = TRUE,
+                  liveSearchNormalize = TRUE,
+                  liveSearchStyle = 'contains',
+                  selectOnTab = TRUE,
+                  showTick = TRUE,
+                  title = "Title",
+                  virtualScroll = TRUE,
+                  width = 'auto',
+                  dropupAuto = TRUE,
+                  mobile = TRUE
+                )
+                )
+              ),
+              
+              fluidRow(
+                column(12, align = 'center',
+                       sliderInput(
+                         'sp.alpha',
+                         "Fill Opacity",
+                         min = 0.1,
+                         max = 1,
+                         value = 0.4,
+                         step = 0.1,
+                         ticks = FALSE
+                       )
+                       )
+              )
+            ),
 
 
             plotlyOutput('polar', width = '100%', height = '600px'),
 
 
 
-              absolutePanel(
-                id    = 'controlpanel2',
-                #class = "panel panel-default",
-                bottom = 10,
-                right  = 10,
-                width  = 180,
-                fixed  = TRUE,
-                draggable = TRUE,
-                height = 'auto',
-                cursor = "move",
-                style = "opacity: 0.9",
-
-                wellPanel(
-
-                  HTML(
-                    markdownToHTML(fragment.only = TRUE,
-                                   text = c("Select Precincts"))
-                  ),
-
-                  pickerInput(
-                    'stat.in1',
-                    choices = sort(unique(sp.norm$Precinct.Name)),
-                    selected = "Arlington Average",
-                    multiple = FALSE,
-                    width = 'auto',
-                    options = list(
-                      liveSearch = TRUE,
-                      liveSearchNormalize = TRUE,
-                      liveSearchStyle = 'contains',
-                      selectOnTab = TRUE,
-                      showTick = TRUE,
-                      title = "Title",
-                      virtualScroll = TRUE,
-                      width = 'auto',
-                      dropupAuto = TRUE
-                    )
-                  ),
-
-                  pickerInput(
-                    'stat.in2',
-                    choices = sort(unique(sp.norm$Precinct.Name)),
-                    selected = "Abingdon",
-                    multiple = FALSE,
-                    width = 'auto',
-                    options = list(
-                      liveSearch = TRUE,
-                      liveSearchNormalize = TRUE,
-                      liveSearchStyle = 'contains',
-                      selectOnTab = TRUE,
-                      showTick = TRUE,
-                      title = "Title",
-                      virtualScroll = TRUE,
-                      width = 'auto',
-                      dropupAuto = TRUE
-                    )
-                  ),
-
-
-
-                  pickerInput(
-                    'stat.in3',
-                    choices = sort(unique(sp.norm$Precinct.Name)),
-                    selected = "Ballston",
-                    multiple = FALSE,
-                    width = 'auto',
-                    options = list(
-                      liveSearch = TRUE,
-                      liveSearchNormalize = TRUE,
-                      liveSearchStyle = 'contains',
-                      selectOnTab = TRUE,
-                      showTick = TRUE,
-                      title = "Title",
-                      virtualScroll = TRUE,
-                      width = 'auto',
-                      dropupAuto = TRUE
-                    )
-                  ),
-
-
-                  sliderInput(
-                    'sp.alpha',
-                    "Fill Opacity",
-                    min = 0.1,
-                    max = 1,
-                    value = 0.4,
-                    step = 0.1,
-                    ticks = FALSE
-                  )
-
-
-                )
-              ),
+              # absolutePanel(
+              #   id    = 'controlpanel2',
+              #   #class = "panel panel-default",
+              #   bottom = 10,
+              #   right  = 10,
+              #   width  = 180,
+              #   fixed  = TRUE,
+              #   draggable = TRUE,
+              #   height = 'auto',
+              #   cursor = "move",
+              #   style = "opacity: 0.9",
+              # 
+              #   wellPanel(
+              # 
+              #     HTML(
+              #       markdownToHTML(fragment.only = TRUE,
+              #                      text = c("Select Precincts"))
+              #     ),
+              # 
+              #    
+              # 
+              # 
+              #   )
+              # ),
 
             tags$h2("On Interpretation"),
             tags$body("Normalization transforms each dimension independently such that highest value in that dimension
@@ -524,7 +487,7 @@ server <- function(input, output, session) {
     geom_area(alpha = 0.1, fill = '#ffa500') +
     scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.5)) ) +
     scale_x_date(labels = date_format("%d-%b"), breaks = unique(vote$date)) +
-    labs(color = "Precinct", y = t1.in.lab(), x = "Date") +
+    labs(color = "", y = t1.in.lab(), x = "Date") +
    # theme(axis.text.x = element_text(angle = -45)) +
     theme_classic() 
     
@@ -565,7 +528,7 @@ server <- function(input, output, session) {
     geom_point(aes(color = Precinct.Name)) +
     scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.5)) ) +
     scale_x_date(labels = date_format("%d-%b"), breaks = unique(vote$date)) +
-    labs(color = "Precinct", y = t1.in.lab(), x = "Date") +
+    labs(color = "", y = t1.in.lab(), x = "Date") +
     theme_classic() 
 
   ggplotly(t2)  %>%
