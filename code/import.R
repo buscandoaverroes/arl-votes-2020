@@ -216,19 +216,25 @@ vote23oct <- readRDS(file = file.path(votes, "23-oct.Rda"))
 vote25oct <- readRDS(file = file.path(votes, "25-oct.Rda"))
 vote26oct <- readRDS(file = file.path(votes, "26-oct.Rda"))
 vote27oct <- readRDS(file = file.path(votes, "27-oct.Rda"))
+vote28oct <- readRDS(file = file.path(votes, "28-oct.Rda"))
+
+
 
 # append all
 vote.data <-
-  bind_rows(vote27oct,
-            vote26oct,
-            vote25oct,
-            vote23oct,
-            vote22oct,
-           # vote21oct,
-            vote19oct,
-            vote18oct,
-            vote15oct,
-            vote12oct) 
+  bind_rows(
+    vote28oct,
+    vote27oct,
+    vote26oct,
+    vote25oct,
+    vote23oct,
+    vote22oct,
+    # vote21oct, # there's an error in the pdf that makes it hard to read
+    vote19oct,
+    vote18oct,
+    vote15oct,
+    vote12oct
+  ) 
 
 
 

@@ -24,8 +24,8 @@ load("data/arl-vote2020.Rdata")
 
 
 # update
-up.date <- "27 Oct, 2020"
-date.data <- "2020-10-27"
+up.date <- "28 Oct, 2020"
+date.data <- "2020-10-28"
 
 
 vote <- vote.data
@@ -59,7 +59,8 @@ popupvaroptions <-c("Precinct.Name", "Total.Votes", "Mail.Received", "Mail.Ballo
                     "Precinct.Share.of.Oustanding.Mail.Votes", "Precinct.Share.of.Mail.Ballots.Received",
                     "Active.Registered")
 
-arltotalvars <- c("Total Votes" = "Total.Votes","Total In-person Early"="Early.Voted",
+arltotalvars <- c("Total Votes" = "Total.Votes",
+                  "Total In-person Early Voting" = "Early.Voted",
                  "Mail Ballots Received" = "Mail.Received",
                  "Mail Ballots Counted" = "Mail.Ballots.Counted",
                  "Mail Ballots Outstanding" = "Mail.Outstanding",
@@ -68,7 +69,7 @@ arltotalvars <- c("Total Votes" = "Total.Votes","Total In-person Early"="Early.V
                  "Active Turnout via Mail" = "Turnout.by.Mail",
                  "Active Turnout via Early Voting" = "Turnout.by.Early.Voting",
                  "Mail Ballot Return Rate" = "Mail.Ballot.Return.Rate",
-                 "Early-to-Mail Ratio" = "Early.to.Mail.Ratio"
+                 "Early Voting-to-Mail Ratio" = "Early.to.Mail.Ratio"
                   )
 
 polarplot <- c("Active.Turnout", "Turnout.by.Mail", "Turnout.by.Early.Voting",
@@ -175,7 +176,7 @@ ui <- navbarPage(
                     valueBox(up.date, "Data Update", color = 'fuchsia'),tags$br(),tags$br()),
 
             tags$h2(tags$b("Voting Statistics Over Time")),
-            tags$body("Select a stat from the dropdown menu. You can zoom in the graphs through click-and-drag."),
+            tags$body("Select a stat from the dropdown menu. You can zoom in on the graphs via click-and-drag."),
             tags$br(), tags$br(), tags$br(),
             fluidRow(
               column(12, align = 'center',
@@ -551,7 +552,7 @@ server <- function(input, output, session) {
         y = -0.25,
         x = 0,
         title = list(
-          text = "Precincts: double click to isolate",
+          text = "Precincts: double click to isolate, single click to add",
           side = 'top',
           font = list(
             size = 16
