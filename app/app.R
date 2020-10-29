@@ -208,7 +208,7 @@ ui <- navbarPage(
             
 
 
-            fluidRow(tags$br(),tags$br(),plotlyOutput('timeline1', width = '100%', height = '400px')),
+            fluidRow(tags$br(),tags$br(),plotlyOutput('timeline1', width = '100%', height = '500px')),
             fluidRow(tags$br(),plotlyOutput('timeline2', width = '100%', height = '400px')),
 
 
@@ -496,7 +496,7 @@ server <- function(input, output, session) {
     geom_line(aes(color = Precinct.Name)) +
     #geom_point(aes(color = Precinct.Name)) +
     geom_area(alpha = 0.1, fill = '#ffa500') +
-    scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.5)) ) +
+    scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.4)) ) +
     scale_x_date(labels = date_format("%d-%b"), breaks = unique(vote$date)) +
     labs(color = "", y = t1.in.lab(), x = "Date") +
     theme(legend.position = 'bottom') +
@@ -505,9 +505,23 @@ server <- function(input, output, session) {
 
   ggplotly(t1) %>%
     layout(
+      yaxis = list(
+        type = 'linear',
+        title = list(
+          text = t1.in.lab(),
+          font = list(
+            family = c("Arial", "Droid Sans", "Times New Roman"),
+            size = 14
+        )  
+        )
+      ),
       showlegend = FALSE,
       title = list(
         text = paste("Arlington Overall:", t1.in.lab() ),
+        font = list(
+          family = c("Arial", "Droid Sans", "Times New Roman"),
+          size = 17
+        ),
         y = 0.98
       ),
       xaxis = list(
@@ -547,6 +561,15 @@ server <- function(input, output, session) {
 
   ggplotly(t2)  %>%
     layout(
+      title = list(
+        text= paste("By Precinct:", t1.in.lab() ),
+        font = list(
+          family = c("Arial", "Droid Sans", "Times New Roman"),
+          size = 17
+        ),
+        y = 0.95,
+        hovertemplate = ht.timeline
+      ),
       legend = list(
         orientation = 'h',
         y = -0.25,
@@ -555,14 +578,10 @@ server <- function(input, output, session) {
           text = "Precincts: double click to isolate, single click to add",
           side = 'top',
           font = list(
+            family = c("Arial", "Droid Sans", "Times New Roman"),
             size = 16
           )
         )
-      ),
-      title = list(
-        text= paste("By Precinct:", t1.in.lab() ),
-        y = 0.95,
-        hovertemplate = ht.timeline
       ),
       height = 700,
       xaxis = list(
@@ -570,6 +589,14 @@ server <- function(input, output, session) {
           text = ""
         ),
         tickangle = 45
+      ),
+      yaxis = list(
+        type = 'linear',
+        text = t1.in.lab(),
+        font = list(
+          family = c("Arial", "Droid Sans", "Times New Roman"),
+          size = 14
+        )
       ),
       legend = list(
         title = "Precinct",
