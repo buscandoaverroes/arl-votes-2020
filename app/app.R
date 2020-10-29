@@ -54,18 +54,21 @@ popupvaroptions <-c("Precinct.Name", "Total.Votes", "Mail.Received", "Mail.Ballo
                     "Mail.Ballots.Counted", "Early.Voted",
                     "Active.Turnout", "Turnout.by.Mail", "Turnout.by.Early.Voting",
                     "Mail.Ballot.Return.Rate", "Early.to.Mail.Ratio", "Early.to.Mail.Turnout.Ratio",
-                    "Mail.Ballots.Requested", "Percent Mail Counted",
+                    "Mail.Ballots.Requested", "Percent.Mail.Counted",
                     "Precinct.Share.of.All.Votes", "Precinct.Share.of.Early.Votes",
                     "Precinct.Share.of.Oustanding.Mail.Votes", "Precinct.Share.of.Mail.Ballots.Received",
                     "Active.Registered")
 
-arltotalvars <- c("Total Votes" = "Total.Votes","Total In-person Early"="Early.Voted", 
+arltotalvars <- c("Total Votes" = "Total.Votes","Total In-person Early"="Early.Voted",
                  "Mail Ballots Received" = "Mail.Received",
                  "Mail Ballots Counted" = "Mail.Ballots.Counted",
-                 "Active Voter Turnout" =  "Active.Turnout", "Active Turnout via Mail" = "Turnout.by.Mail",
+                 "Mail Ballots Outstanding" = "Mail.Outstanding",
+                 "Percent of Received Mail Ballots Counted" = "Percent.Mail.Counted",
+                 "Active Voter Turnout" =  "Active.Turnout",
+                 "Active Turnout via Mail" = "Turnout.by.Mail",
                  "Active Turnout via Early Voting" = "Turnout.by.Early.Voting",
-                 "Mail Ballot Return Rate" = "Mail.Ballot.Return.Rate", "Early-to-Mail Ratio" = "Early.to.Mail.Ratio",
-                 "Early-to-Mail Turnout Ratio" = "Early.to.Mail.Turnout.Ratio"
+                 "Mail Ballot Return Rate" = "Mail.Ballot.Return.Rate",
+                 "Early-to-Mail Ratio" = "Early.to.Mail.Ratio"
                   )
 
 polarplot <- c("Active.Turnout", "Turnout.by.Mail", "Turnout.by.Early.Voting",
@@ -163,14 +166,14 @@ ui <- navbarPage(
                     valueBox(prettyNum(vote.tot$Total.Votes, big.mark = ','),
                              'Total Votes', width = 4, color = 'yellow'),
                     valueBox(up.date, "Data Update", color = 'fuchsia'),tags$br(),tags$br()),
-            
+
             tags$h2("Voting Statistics Over Time"),
-            tags$body("Select a stat from the dropdown to plot for Arlington Overall and by Precinct. Since the 
+            tags$body("Select a stat from the dropdown to plot for Arlington Overall and by Precinct. Since the
                       by-Precinct Graph can get crowded, you can
                       zoom in by clicking and dragging on the plot area, or alternatively highlight precincts
                       by single- or double-clicking names in the legend below."),
             tags$br(), tags$br(),
-            fluidRow(   
+            fluidRow(
               column(12, align = 'center',
                      # timeline input panel ----
                      pickerInput(
@@ -193,10 +196,10 @@ ui <- navbarPage(
                          dropupAuto = TRUE
                        )
                      )
-             
+
             )),
-            
-            
+
+
             fluidRow(tags$br(),tags$br(),plotlyOutput('timeline1', width = '100%', height = '400px')),
             fluidRow(tags$br(),plotlyOutput('timeline2', width = '100%', height = '400px')),
 
@@ -255,7 +258,7 @@ ui <- navbarPage(
         #                                     "Early-to-Mail Turnout Ratio" = "Early.to.Mail.Turnout.Ratio",
         #                                     "Share of All Outstanding Mail Ballots"="Precinct.Share.of.Oustanding.Mail.Votes",
         #                                     "Share of All Early Votes" = "Precinct.Share.of.Early.Votes",
-        #                                     "Percent Received Mail Counted" = "Percent Mail Counted")),
+        #                                     "Percent Received Mail Counted" = "Percent.Mail.Counted")),
         #           selected = "Total.Votes",
         #           multiple = FALSE,
         #           width = 215
@@ -302,9 +305,9 @@ ui <- navbarPage(
             tags$h2("Key Voting Statistics by Precinct"),
             tags$body("Select up to three precincts to display normalized statistics. Clicking on the precinct
                     names in the legend will toggle individual polygons."),
-            tags$br(), 
+            tags$br(),
             fluidRow(
-              
+
               column(4, align = 'center',
               pickerInput(
                 'stat.in1',
@@ -327,7 +330,7 @@ ui <- navbarPage(
                 )
               )
               ),
-              
+
               column(4, align = 'center',
               pickerInput(
                 'stat.in2',
@@ -350,8 +353,8 @@ ui <- navbarPage(
                 )
                 )
               ),
-              
-              
+
+
               column(4, align = 'center',
               pickerInput(
                 'stat.in3',
@@ -374,7 +377,7 @@ ui <- navbarPage(
                 )
                 )
               ),
-              
+
               fluidRow(
                 column(12, align = 'center',
                        sliderInput(
@@ -406,17 +409,17 @@ ui <- navbarPage(
               #   height = 'auto',
               #   cursor = "move",
               #   style = "opacity: 0.9",
-              # 
+              #
               #   wellPanel(
-              # 
+              #
               #     HTML(
               #       markdownToHTML(fragment.only = TRUE,
               #                      text = c("Select Precincts"))
               #     ),
-              # 
-              #    
-              # 
-              # 
+              #
+              #
+              #
+              #
               #   )
               # ),
 
@@ -476,21 +479,21 @@ server <- function(input, output, session) {
   t1.in.lab <- reactive({ str_replace_all(input$timeline.in1, "\\.", " ") })
 
   output$timeline1 <- renderPlotly({
-    
-  t1 <-  
-    ggplot(vote[vote$Precinct.Name %in% "Arlington Totals",], 
-                aes(x = date, 
+
+  t1 <-
+    ggplot(vote[vote$Precinct.Name %in% "Arlington Totals",],
+                aes(x = date,
                     y =  eval(as.name(t1.in() )),
                     )) + # input$timeline.in1
     geom_line(aes(color = Precinct.Name)) +
-    geom_point(aes(color = Precinct.Name)) + 
+    geom_point(aes(color = Precinct.Name)) +
     geom_area(alpha = 0.1, fill = '#ffa500') +
     scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.5)) ) +
     scale_x_date(labels = date_format("%d-%b"), breaks = unique(vote$date)) +
     labs(color = "", y = t1.in.lab(), x = "Date") +
    # theme(axis.text.x = element_text(angle = -45)) +
-    theme_classic() 
-    
+    theme_classic()
+
 
   ggplotly(t1) %>%
     layout(
@@ -517,11 +520,11 @@ server <- function(input, output, session) {
     config(
       displayModeBar = FALSE
     )
-  
+
   }) # end render plotly
 
   output$timeline2 <- renderPlotly({
-  t2 <-  
+  t2 <-
     ggplot(vote.pr, aes(x = date,
                         y = eval(as.name(t1.in() )) )) +
     geom_line(aes(color = Precinct.Name)) +
@@ -529,7 +532,7 @@ server <- function(input, output, session) {
     scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.5)) ) +
     scale_x_date(labels = date_format("%d-%b"), breaks = unique(vote$date)) +
     labs(color = "", y = t1.in.lab(), x = "Date") +
-    theme_classic() 
+    theme_classic()
 
   ggplotly(t2)  %>%
     layout(
@@ -537,7 +540,7 @@ server <- function(input, output, session) {
         text= paste("By Precinct:", t1.in.lab() ),
         y = 0.95,
         hovertemplate = ht.timeline
-        
+
       ),
       xaxis = list(
         title = list(
@@ -700,7 +703,7 @@ server <- function(input, output, session) {
        rename(
          `Active Turnout` = "Active.Turnout",  `Mail Ballot Return Rate` = "Mail.Ballot.Return.Rate",
          `Early to Mail Ratio` = "Early.to.Mail.Ratio", `Mail Ballots Requested` = "Mail.Ballots.Requested",
-         `Outstanding Votes` = "Outstanding.Votes", `Total Votes` = "Total.Votes" 
+         `Outstanding Votes` = "Outstanding.Votes", `Total Votes` = "Total.Votes"
        ) %>%
        as.vector() %>%
        gather()
@@ -713,7 +716,7 @@ server <- function(input, output, session) {
        rename(
          `Active Turnout` = "Active.Turnout",  `Mail Ballot Return Rate` = "Mail.Ballot.Return.Rate",
          `Early to Mail Ratio` = "Early.to.Mail.Ratio", `Mail Ballots Requested` = "Mail.Ballots.Requested",
-         `Outstanding Votes` = "Outstanding.Votes", `Total Votes` = "Total.Votes" 
+         `Outstanding Votes` = "Outstanding.Votes", `Total Votes` = "Total.Votes"
        ) %>%
        as.vector() %>%
        gather()
@@ -727,7 +730,7 @@ server <- function(input, output, session) {
        rename(
         `Active Turnout` = "Active.Turnout",  `Mail Ballot Return Rate` = "Mail.Ballot.Return.Rate",
         `Early to Mail Ratio` = "Early.to.Mail.Ratio", `Mail Ballots Requested` = "Mail.Ballots.Requested",
-        `Outstanding Votes` = "Outstanding.Votes", `Total Votes` = "Total.Votes" 
+        `Outstanding Votes` = "Outstanding.Votes", `Total Votes` = "Total.Votes"
        ) %>%
        as.vector() %>%
        gather()
@@ -781,7 +784,7 @@ server <- function(input, output, session) {
          line = list(width = w.sp, color = color.3mk),
          fillcolor = color.3
        )  %>%
-       layout( 
+       layout(
          paper_bgcolor = "", #'rgba(0,0,0,0)',
          plot_bgcolor  = "", #'rgba(0,0,0,0.5)',
          polar = list(

@@ -240,7 +240,7 @@ vote.data9 <-
     federal.pct     = round( (federal/sum(active)), 3),
     mail.turnout.ratio = round( (prec.early.turnout / prec.mail.turnout ), 1),
     pct.active.reg  =  round( 100 * (active/sum(active)), 1),
-    `Percent Mail Counted`  =  round( 100 * (counted / mail.received), 1)
+    `Percent.Mail.Counted`  =  round( 100 * (counted / mail.received), 1)
   )
 
 # check math!

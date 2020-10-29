@@ -233,7 +233,7 @@ vote.data27 <-
     federal.pct     = round( (federal/sum(active)), 3),
     mail.turnout.ratio = round( (prec.early.turnout / prec.mail.turnout ), 1),
     pct.active.reg  =  round( 100 * (active/sum(active)), 1),
-    `Percent Mail Counted`  =  round( 100 * (counted / mail.received), 1),
+    `Percent.Mail.Counted`  =  round( 100 * (counted / mail.received), 1),
     date     = lubridate::as_date(ymd("2020-10-27"))
   )
 
@@ -300,6 +300,7 @@ arl <- tibble(
   `Outstanding.Votes` = sum(vote.data27$`Outstanding.Votes`),
   `Percent.Outstanding.Votes` = sum(vote.data27$`Percent.Outstanding.Votes`),
   `Mail.Ballots.Requested` = sum(vote.data27$`Mail.Ballots.Requested`),
+  `Percent.Mail.Counted`  =  round( 100 *(sum(vote.data27$`Mail.Ballots.Counted`) / sum(vote.data27$`Mail.Received`)), 1),
   `Precinct.Share.of.All.Votes` =  100, # must be 100
   `Mail.Ballot.Return.Rate` = round( (sum(vote.data27$`Mail.Received`) /
                                         sum(vote.data27$`Mail.Ballots.Requested`)), 2),

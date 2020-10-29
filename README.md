@@ -125,7 +125,7 @@ means that Early Voting and Mail-in Voting contributed equal shares
 to the overall Active Turnout. A higher ratio indicates that a Early
 Voting contributed a larger share of the (active) voter turnout compared
 to Mail-in Voting.
-- Percent Mail Counted: uses **Mail Ballots Received** as the denominator and the County-provided
+- Percent.Mail.Counted: uses **Mail Ballots Received** as the denominator and the County-provided
 total of Mail Ballots Counted as the natural numerator.
 
 ### Other Notes
