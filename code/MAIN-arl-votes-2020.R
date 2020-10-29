@@ -148,6 +148,8 @@ if (s.import == 1) {
 # https://stackoverflow.com/questions/35345782/shiny-passing-inputvar-to-aes-in-ggplot2
 # https://plotly.com/graphing-libraries/
 # https://plotly.com/python/axes/
+# https://github.com/ropensci/plotly/issues/1049
+
 
 
 

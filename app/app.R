@@ -161,24 +161,28 @@ ui <- navbarPage(
         tabPanel(
           "Timeline",
           fluidPage(
+            
+            fluidRow(
+              tags$h1(tags$b("Arlington Votes 2020")),
+              tags$h4(tags$b("Tracking the latest voting totals for Arlington County, Virginia.")),
+              tags$br(), tags$br(),
+            ),
+            
             fluidRow(
                     valueBox(paste0(vote.tot$Active.Turnout, '%'), 'Latest Estimated Turnout', width = 4, color = 'yellow'),
                     valueBox(prettyNum(vote.tot$Total.Votes, big.mark = ','),
                              'Total Votes', width = 4, color = 'yellow'),
                     valueBox(up.date, "Data Update", color = 'fuchsia'),tags$br(),tags$br()),
 
-            tags$h2("Voting Statistics Over Time"),
-            tags$body("Select a stat from the dropdown to plot for Arlington Overall and by Precinct. Since the
-                      by-Precinct Graph can get crowded, you can
-                      zoom in by clicking and dragging on the plot area, or alternatively highlight precincts
-                      by single- or double-clicking names in the legend below."),
-            tags$br(), tags$br(),
+            tags$h2(tags$b("Voting Statistics Over Time")),
+            tags$body("Select a stat from the dropdown menu. You can zoom in the graphs through click-and-drag."),
+            tags$br(), tags$br(), tags$br(),
             fluidRow(
               column(12, align = 'center',
                      # timeline input panel ----
                      pickerInput(
                        'timeline.in1',
-                       "Plot:",
+                       "Graph:",
                        choices = arltotalvars,
                        selected = "Total.Votes",
                        multiple = FALSE,
@@ -198,6 +202,9 @@ ui <- navbarPage(
                      )
 
             )),
+            
+            tags$br(),
+            
 
 
             fluidRow(tags$br(),tags$br(),plotlyOutput('timeline1', width = '100%', height = '400px')),
@@ -302,10 +309,10 @@ ui <- navbarPage(
         tabPanel( # stats ----
           "Stats",
           fluidPage(
-            tags$h2("Key Voting Statistics by Precinct"),
+            tags$h2(tags$b("Key Voting Statistics by Precinct")),
             tags$body("Select up to three precincts to display normalized statistics. Clicking on the precinct
                     names in the legend will toggle individual polygons."),
-            tags$br(),
+            tags$br(), tags$br(),
             fluidRow(
 
               column(4, align = 'center',
@@ -486,24 +493,25 @@ server <- function(input, output, session) {
                     y =  eval(as.name(t1.in() )),
                     )) + # input$timeline.in1
     geom_line(aes(color = Precinct.Name)) +
-    geom_point(aes(color = Precinct.Name)) +
+    #geom_point(aes(color = Precinct.Name)) +
     geom_area(alpha = 0.1, fill = '#ffa500') +
     scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.5)) ) +
     scale_x_date(labels = date_format("%d-%b"), breaks = unique(vote$date)) +
     labs(color = "", y = t1.in.lab(), x = "Date") +
-   # theme(axis.text.x = element_text(angle = -45)) +
+    theme(legend.position = 'bottom') +
     theme_classic()
 
 
   ggplotly(t1) %>%
     layout(
+      showlegend = FALSE,
       title = list(
         text = paste("Arlington Overall:", t1.in.lab() ),
         y = 0.98
       ),
       xaxis = list(
         title = list(
-          text = "Date"
+          text = ""
         ),
         tickangle = 45
       ),
@@ -528,23 +536,37 @@ server <- function(input, output, session) {
     ggplot(vote.pr, aes(x = date,
                         y = eval(as.name(t1.in() )) )) +
     geom_line(aes(color = Precinct.Name)) +
-    geom_point(aes(color = Precinct.Name)) +
+    #geom_point(aes(color = Precinct.Name)) +
     scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.5)) ) +
     scale_x_date(labels = date_format("%d-%b"), breaks = unique(vote$date)) +
-    labs(color = "", y = t1.in.lab(), x = "Date") +
+    labs(color = "", y = t1.in.lab(), x = "") +
+    guides(color = guide_legend(nrow = 10, byrow = TRUE)) + # pltly won't render this?
+    theme(legend.position = 'bottom') +
     theme_classic()
 
   ggplotly(t2)  %>%
     layout(
+      legend = list(
+        orientation = 'h',
+        y = -0.25,
+        x = 0,
+        title = list(
+          text = "Precincts: double click to isolate",
+          side = 'top',
+          font = list(
+            size = 16
+          )
+        )
+      ),
       title = list(
         text= paste("By Precinct:", t1.in.lab() ),
         y = 0.95,
         hovertemplate = ht.timeline
-
       ),
+      height = 700,
       xaxis = list(
         title = list(
-          text = "Date"
+          text = ""
         ),
         tickangle = 45
       ),
