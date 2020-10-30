@@ -110,6 +110,9 @@ color.blk<- '#000000'
 a.sp = 0.3   # alpha for scatter polar
 w.sp = 2      # width of scatter polar boundary lines
 
+t1height = 500 # timeline 1 height 
+t2height = 500 # timeline 2 height 
+
 # hovertext settings
 ht.polar <- paste("%{theta}",
                   "<br>Normalized Value: %{r:.2f}")
@@ -208,8 +211,8 @@ ui <- navbarPage(
             
 
 
-            fluidRow(tags$br(),tags$br(),plotlyOutput('timeline1', width = '100%', height = '500px')),
-            fluidRow(tags$br(),plotlyOutput('timeline2', width = '100%', height = '400px')),
+            fluidRow(tags$br(),tags$br(),plotlyOutput('timeline1', width = '100%', height = t1height)),
+            fluidRow(tags$br(),plotlyOutput('timeline2', width = '100%', height = t2height)),
 
 
           ) # end fluidpage
@@ -321,7 +324,7 @@ ui <- navbarPage(
                 'stat.in1',
                 label = "Polygon 1",
                 choices = sort(unique(sp.norm$Precinct.Name)),
-                selected = "Arlington Average",
+                selected = "Dominion Hills",
                 multiple = FALSE,
                 width = '200px',
                 options = list(
@@ -344,7 +347,7 @@ ui <- navbarPage(
                 'stat.in2',
                 label = "Polygon 2",
                 choices = sort(unique(sp.norm$Precinct.Name)),
-                selected = "Abingdon",
+                selected = "Rosslyn",
                 multiple = FALSE,
                 width = '200px',
                 options = list(
@@ -368,7 +371,7 @@ ui <- navbarPage(
                 'stat.in3',
                 label = "Polygon 3",
                 choices = sort(unique(sp.norm$Precinct.Name)),
-                selected = "Ballston",
+                selected = "Arlington Average",
                 multiple = FALSE,
                 width = '200px',
                 options = list(
@@ -494,25 +497,25 @@ server <- function(input, output, session) {
                     y =  eval(as.name(t1.in() )),
                     )) + # input$timeline.in1
     geom_line(aes(color = Precinct.Name)) +
-    #geom_point(aes(color = Precinct.Name)) +
     geom_area(alpha = 0.1, fill = '#ffa500') +
-    scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.4)) ) +
+    scale_y_continuous(limits = c(0,NA), expand = expansion(mult = c(0,0.2)) ) +
     scale_x_date(labels = date_format("%d-%b"), breaks = unique(vote$date)) +
     labs(color = "", y = t1.in.lab(), x = "Date") +
     theme(legend.position = 'bottom') +
     theme_classic()
 
 
-  ggplotly(t1) %>%
+  ggplotly(t1, height = t1height) %>%
     layout(
       yaxis = list(
         type = 'linear',
+        tickmode = 'auto',
         title = list(
           text = t1.in.lab(),
           font = list(
             family = c("Arial", "Droid Sans", "Times New Roman"),
             size = 14
-        )  
+          )  
         )
       ),
       showlegend = FALSE,
@@ -559,7 +562,7 @@ server <- function(input, output, session) {
     theme(legend.position = 'bottom') +
     theme_classic()
 
-  ggplotly(t2)  %>%
+  ggplotly(t2, height = t2height)  %>%
     layout(
       title = list(
         text= paste("By Precinct:", t1.in.lab() ),
@@ -592,11 +595,15 @@ server <- function(input, output, session) {
       ),
       yaxis = list(
         type = 'linear',
-        text = t1.in.lab(),
-        font = list(
-          family = c("Arial", "Droid Sans", "Times New Roman"),
-          size = 14
-        )
+        tickmode = 'auto',
+        nticks = 6,
+          title = list(
+            text = t1.in.lab(),
+            font = list(
+              family = c("Arial", "Droid Sans", "Times New Roman"),
+              size = 14
+            )  
+          )
       ),
       legend = list(
         title = "Precinct",
