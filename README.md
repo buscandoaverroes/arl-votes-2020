@@ -153,3 +153,4 @@ This page was developed using publicly-available data, including:
 - [Voter Registration Numbers](https://arlingtonva.s3.amazonaws.com/wp-content/uploads/sites/3/2020/10/Registrant_Counts_By_Locality.pdf)
 - I have also referred to the [Voter Precinct Polygons](https://gisdata-arlgis.opendata.arcgis.com/datasets/voter-precinct-polygons) even though they are not used
 in this app.
+- Thanks to [ColorBrewer](https://colorbrewer2.org/) who helped provide many of the color schemes in the app.

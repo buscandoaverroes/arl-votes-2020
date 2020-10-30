@@ -30,7 +30,7 @@ date.data <- "2020-10-28"
 
 vote <- vote.data
 vote.pr <- vote %>%
-  filter(Precinct.Name != "Arlington Totals")
+  filter(Precinct.Name != "Arlington Totals") 
 vote.tot <- vote %>%
   filter(Precinct.Name == "Arlington Totals" & date == date.data)
 
@@ -121,6 +121,13 @@ ht.polar <- paste("%{theta}",
 ht.timeline <- paste("%{x}",
                      "<br>%{y:.1f}") #  <extra></extra>
 
+ht.scatter <- paste("<b>%{text}</b>",
+                    "<br>Mail: %{x:,f}",
+                    "<br>Early: %{y:,f}",
+                    "<br>Turnout: %{marker.color:.1f}%",
+                   # "<br>Active Turnout:%{fullData} %{xaxis}", # maybe I can't include these?s
+                  #  "<br>Date: %{pointNumber}",
+                    "<extra></extra>") #  
 
 
 # correlation data
@@ -177,8 +184,17 @@ ui <- navbarPage(
                     valueBox(prettyNum(vote.tot$Total.Votes, big.mark = ','),
                              'Total Votes', width = 4, color = 'yellow'),
                     valueBox(up.date, "Data Update", color = 'fuchsia'),tags$br(),tags$br()),
-
-            tags$h2(tags$b("Voting Statistics Over Time")),
+            
+            
+            tags$h2(tags$b("Voting Method Animation")),
+            tags$body("Tap 'play' to animate the changes over time. Dot size is proportionate
+                      to active registered voter counts in each precinct."),
+            
+            
+            fluidRow(tags$br(),tags$br(),plotlyOutput('scatter1', width = '100%', height = t1height)),
+            tags$br(),tags$br(),
+            
+            tags$h2(tags$b("Voting Timelines")),
             tags$body("Select a stat from the dropdown menu. You can zoom in on the graphs via click-and-drag."),
             tags$br(), tags$br(), tags$br(),
             fluidRow(
@@ -481,6 +497,75 @@ ui <- navbarPage(
 # Define server logic
 server <- function(input, output, session) {
 
+  
+  # scatter ----
+  
+  output$scatter1 <- renderPlotly({
+    
+    scatter <- plot_ly() %>%
+      add_trace(
+      data = vote.pr,
+      type = 'scatter', 
+      mode = 'markers',
+      x = ~Mail.Received, # Mail.Ballot.Return.Rate
+      y = ~Early.Voted, # Active.Turnout
+      size = ~Active.Registered,
+      color = ~Active.Turnout, # Early.to.Mail.Ratio
+      frame = ~date,
+      text = ~Precinct.Name
+    ) %>%
+    layout(
+      title = list(
+        text = "",
+        font = list(
+          family = c("Arial", "Droid Sans", "Times New Roman"),
+          size = 18
+        )
+      ),
+      yaxis = list(
+        title = list(
+          text = "Early In-Person Votes",
+          font = list(
+            family = c("Arial", "Droid Sans", "Times New Roman"),
+            size = 17
+          )
+        )
+      ),
+      xaxis = list(
+        title = list(
+          text = "Mail-in Votes",
+          font = list(
+            family = c("Arial", "Droid Sans", "Times New Roman"),
+            size = 17
+          )
+        )
+      )
+    ) %>% # end layout
+    colorbar(
+      title = paste("% Active", "<br>Turnout"),
+      x = 0.95,
+      y = 0.5,
+      len = 0.5,
+      lenmode = 'percent',
+      thickness = 12
+      ) %>%
+    animation_opts(
+        frame = 700,
+        transition = 700,
+        easing = 'linear',
+        redraw = FALSE
+      ) %>%
+      style(
+        hovertemplate = ht.scatter
+      ) %>%
+      config(
+        displayModeBar = FALSE
+      )
+      
+    
+    
+  })
+  
 
 
   # timelines ----
@@ -575,7 +660,7 @@ server <- function(input, output, session) {
       ),
       legend = list(
         orientation = 'h',
-        y = -0.25,
+        y = -0.28,
         x = 0,
         title = list(
           text = "Precincts: double click to isolate, single click to add",
