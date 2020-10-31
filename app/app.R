@@ -24,8 +24,8 @@ load("data/arl-vote2020.Rdata")
 
 
 # update
-up.date <- "28 Oct, 2020"
-date.data <- "2020-10-28"
+up.date <- "30 Oct, 2020"
+date.data <- "2020-10-30"
 
 
 vote <- vote.data
@@ -33,7 +33,6 @@ vote.pr <- vote %>%
   filter(Precinct.Name != "Arlington Totals") 
 vote.tot <- vote %>%
   filter(Precinct.Name == "Arlington Totals" & date == date.data)
-
 
 
 # define basemap
@@ -125,8 +124,6 @@ ht.scatter <- paste("<b>%{text}</b>",
                     "<br>Mail: %{x:,f}",
                     "<br>Early: %{y:,f}",
                     "<br>Turnout: %{marker.color:.1f}%",
-                   # "<br>Active Turnout:%{fullData} %{xaxis}", # maybe I can't include these?s
-                  #  "<br>Date: %{pointNumber}",
                     "<extra></extra>") #  
 
 
@@ -189,7 +186,54 @@ ui <- navbarPage(
             tags$h2(tags$b("Voting Method Animation")),
             tags$body("Tap 'play' to animate the changes over time. Dot size is proportionate
                       to active registered voter counts in each precinct."),
+            tags$br(), tags$br(),
             
+            # scatter 1 ----
+            fluidRow(
+              
+              # slider 1
+              column(4, align = 'center',
+                     sliderInput('in_pause_dur',
+                                 "Pause Duration",
+                                 min = 0,
+                                 max = 1,
+                                 value = 0.1,
+                                 ticks = FALSE,
+                                 step = 0.1,
+                                 width = '75%'
+                                 #post = " (s)"
+                     )
+                     ),
+              
+              # slider 2 ---
+              column(4, align = 'center',
+                     sliderInput('in_trans_dur',
+                                 "Transition Duration",
+                                 min = 0,
+                                 max = 1,
+                                 value = 0.4,
+                                 ticks = FALSE,
+                                 step = 0.1,
+                                 width = '75%'
+                               #  post = "()"
+                                 )
+                     
+              ),
+              
+              # checkbox 1 ---
+              column(4, align = 'center',
+                     radioButtons(
+                       'in_ease_type',
+                       "Animation Type",
+                       choices = c("Linear" = "linear",
+                                   "Elastic" = "elastic"),
+                       inline = FALSE
+                       
+                     )
+              ),
+              
+              
+            ),
             
             fluidRow(tags$br(),tags$br(),plotlyOutput('scatter1', width = '100%', height = t1height)),
             tags$br(),tags$br(),
@@ -500,6 +544,13 @@ server <- function(input, output, session) {
   
   # scatter ----
   
+  ## define reactive sum of two input values
+  frame_trans <- reactive({ (1000 * input$in_trans_dur) })
+  frame_dur <- reactive({ frame_trans() + (1000 * input$in_pause_dur)  })
+  # ease <- reactive({ if_else(input$in_ease_type == TRUE, 
+  #                            true = "elastic",
+  #                            false= "linear")  })
+  
   output$scatter1 <- renderPlotly({
     
     scatter <- plot_ly() %>%
@@ -550,9 +601,9 @@ server <- function(input, output, session) {
       thickness = 12
       ) %>%
     animation_opts(
-        frame = 700,
-        transition = 700,
-        easing = 'linear',
+        frame = frame_dur(),
+        transition = frame_trans() ,
+        easing = input$in_ease_type,
         redraw = FALSE
       ) %>%
       style(
@@ -560,7 +611,7 @@ server <- function(input, output, session) {
       ) %>%
       config(
         displayModeBar = FALSE
-      )
+      ) 
       
     
     
