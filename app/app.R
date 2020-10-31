@@ -27,8 +27,9 @@ load("data/arl-vote2020.Rdata")
 up.date <- "30 Oct, 2020"
 date.data <- "2020-10-30"
 
-
+# format date and make data changes.
 vote <- vote.data
+
 vote.pr <- vote %>%
   filter(Precinct.Name != "Arlington Totals") 
 vote.tot <- vote %>%
@@ -606,6 +607,10 @@ server <- function(input, output, session) {
         easing = input$in_ease_type,
         redraw = FALSE
       ) %>%
+    animation_slider(
+      currentvalue = list(prefix = "Date ", font = list(color='red')),
+      y = -0.1
+    ) %>%
       style(
         hovertemplate = ht.scatter
       ) %>%
@@ -681,7 +686,7 @@ server <- function(input, output, session) {
     ) %>%
     config(
       displayModeBar = FALSE
-    )
+    ) 
 
   }) # end render plotly
 
