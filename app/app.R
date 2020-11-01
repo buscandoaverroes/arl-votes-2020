@@ -96,6 +96,9 @@ pop.filter <- vote[vote$date %in% "2020-10-31",] %>%
 # color 'n-tiles'
 ntiles <- c(0, 1/6, 1/3, 0.5, 2/3, 5/6, 1)
 
+
+
+# SETTINGS          - - - - - - - - - - - - - - - - - -- - - ----
 # other color settings
 color.av <- '#778899'
 color.1  <- 'Aqua' #
@@ -109,8 +112,12 @@ color.blk<- '#000000'
 a.sp = 0.3   # alpha for scatter polar
 w.sp = 2      # width of scatter polar boundary lines
 
+# heights
 t1height = 500 # timeline 1 height 
 t2height = 500 # timeline 2 height 
+s2height = 700 # timeline 2 height 
+
+
 
 # hovertext settings
 ht.polar <- paste("%{theta}",
@@ -125,6 +132,13 @@ ht.scatter <- paste("<b>%{text}</b>",
                     "<br>Early: %{y:,f}",
                     "<br>Turnout: %{marker.color:.1f}%",
                     "<extra></extra>") #  
+
+ht.scatter2 <- paste("<b>%{text}</b>",
+                    "<br>Early-to-Mail Ratio: %{x:.1f}",
+                    #"<br>Date: %{meta[i]}", # access this in scatter>meta?
+                    "<br>Turnout: %{marker.color:.1f}%",
+                    "<extra></extra>") # 
+
 
 
 # correlation data
@@ -167,7 +181,7 @@ ui <- navbarPage(
 
 
         tabPanel(
-          "Timeline",
+          "Home",
           fluidPage(
             
             fluidRow(
@@ -221,13 +235,16 @@ ui <- navbarPage(
                    
             ),
             
-            tags$h2(tags$b("Votes by Method")),
-            tags$body("Tap 'play' to show changes over time. You can adjust the animiation settings below.
-                      Dot size is proportionate
+            tags$h2(tags$b("Voting Totals Animations")),
+            tags$body("In each chart, tap 'play' to show changes over time.
+                      You can adjust the animiation settings for all charts below.
+                      The dot size is proportionate
                       to active registered voter counts in each precinct."),
             tags$br(), tags$br(),
             
-            # scatter 1 ----
+            
+            
+          # Plotly time sliders ----   
             fluidRow(
               
               # slider 1
@@ -243,8 +260,9 @@ ui <- navbarPage(
                                  #post = " (s)"
                      )
                      ),
+            
               
-              # slider 2 ---
+              # slider 2 --- 
               column(4, align = 'center',
                      sliderInput('in_trans_dur',
                                  "Transition Duration",
@@ -274,52 +292,23 @@ ui <- navbarPage(
               
             ),
             
-            fluidRow(tags$br(),tags$br(),plotlyOutput('scatter1', width = '100%', height = t1height)),
+          
+          
+          # scatter 1 output ----
+            fluidRow(column(12, align = 'center', tags$h3(tags$b("Votes by Method")))),
+            fluidRow(plotlyOutput('scatter1', width = '100%', height = t1height)),
             tags$br(),tags$br(),
-            
-            tags$h2(tags$b("Voting Timelines")),
-            tags$body("Select a stat from the dropdown menu.
-                      You can zoom via click-and-drag. To isolate a single precinct,
-                      double click its name in the legend below. Then single click other precincts to compare."),
-            tags$br(), tags$br(), tags$br(),
-            fluidRow(
-              column(12, align = 'center',
-                     # timeline input panel ----
-                     pickerInput(
-                       'timeline.in1',
-                       "Graph:",
-                       choices = arltotalvars,
-                       selected = "Total.Votes",
-                       multiple = FALSE,
-                       width = '350px',
-                       inline = TRUE,
-                       options = list(
-                         liveSearch = TRUE,
-                         liveSearchNormalize = TRUE,
-                         liveSearchStyle = 'contains',
-                         selectOnTab = TRUE,
-                         showTick = TRUE,
-                         title = "Title",
-                         virtualScroll = TRUE,
-                         width = 'auto',
-                         dropupAuto = TRUE
-                       )
-                     )
-
-            )),
-            
-            tags$br(),
-            
-
-
-            fluidRow(tags$br(),tags$br(),plotlyOutput('timeline1', width = '100%', height = t1height)),
-            fluidRow(tags$br(),plotlyOutput('timeline2', width = '100%', height = t2height)),
-
+          
+          # scatter 2 output ----
+          fluidRow(column(12, align = 'center', tags$h3(tags$b("Active Turnout vs Early Voting-to-Mail Ratio")),
+                          tags$body("A higher ratio indicates that a greater share of votes came from in-person
+                                    early voting."))),
+          fluidRow(tags$br(),tags$br(),plotlyOutput('scatter2', width = '100%', height = s2height)),
+          tags$br(),tags$br(),
+          
 
           ) # end fluidpage
-
-
-        ), # end tab panel timeline
+        ), # end tab panel home
 
 
         # tabPanel( # map (coming soon)  ----
@@ -411,6 +400,59 @@ ui <- navbarPage(
         #
         #     ), # close map tab panel
 
+        
+        tabPanel( # Timeline tab ----
+          "Timeline",
+          fluidPage(
+            
+            tags$h2(tags$b("Voting Timelines")),
+            tags$body("Select a stat from the dropdown menu.
+                      You can zoom via click-and-drag. To isolate a single precinct,
+                      double click its name in the legend below. Then single click other precincts to compare."),
+            tags$br(), tags$br(), tags$br(),
+            fluidRow(
+              column(12, align = 'center',
+                     # timeline input panel ----
+                     pickerInput(
+                       'timeline.in1',
+                       "Graph:",
+                       choices = arltotalvars,
+                       selected = "Total.Votes",
+                       multiple = FALSE,
+                       width = '350px',
+                       inline = TRUE,
+                       options = list(
+                         liveSearch = TRUE,
+                         liveSearchNormalize = TRUE,
+                         liveSearchStyle = 'contains',
+                         selectOnTab = TRUE,
+                         showTick = TRUE,
+                         title = "Title",
+                         virtualScroll = TRUE,
+                         width = 'auto',
+                         dropupAuto = TRUE
+                       )
+                     )
+                     
+              )),
+            
+            tags$br(),tags$br(),
+            
+            
+            fluidRow(column(12, align = 'center',
+                            tags$h3(tags$b("Arlington Totals")))),
+            fluidRow(plotlyOutput('timeline1', width = '100%', height = t1height)),
+            tags$br(),tags$br(),
+            fluidRow(column(12, align = 'center',
+                            tags$h3(tags$b("By Precinct")))), 
+            fluidRow(tags$br(),plotlyOutput('timeline2', width = '100%', height = t2height)),
+            
+            
+          ) # end fluidpage
+        ), #end tabpanel timeline
+        
+        
+        
         tabPanel( # stats ----
           "Stats",
           fluidPage(
@@ -752,6 +794,63 @@ server <- function(input, output, session) {
   })
   
 
+  # scatter 2: Early to Mail Ratio to Active Turnout Overtime 
+  output$scatter2 <- renderPlotly({
+    
+    plot_ly() %>%
+      add_trace(
+        data = vote.pr,
+        type = 'scatter', 
+        mode = 'markers',
+        x = ~Early.to.Mail.Ratio, # Mail.Ballot.Return.Rate
+        y = ~Precinct.Name, # Active.Turnout
+        size = ~Active.Registered,
+        color = ~Active.Turnout, # Early.to.Mail.Ratio
+        frame = ~date,
+        text = ~Precinct.Name
+      ) %>%
+      layout(
+        title = "",
+        xaxis = list(
+          title = "Early Voting-to-Mail Ratio"
+        ),
+        yaxis = list(
+          title = "Precinct",
+          showticklabels = FALSE
+        ),
+        margin = list(l = 100)
+      ) %>% # end layout
+      colorbar(
+        title = paste("% Active", "<br>Turnout"),
+        x = 0.90,
+        y = 0.5,
+        len = 0.5,
+        lenmode = 'percent',
+        thickness = 12
+      ) %>%
+      animation_opts(
+        frame = frame_dur(),
+        transition = frame_trans(),
+        easing = input$ease_type,
+        redraw = FALSE
+      ) %>%
+      animation_slider(
+        currentvalue = list(prefix = "Date ", font = list(color='red')),
+        y = -0.1
+      ) %>%
+      style(
+        hovertemplate = ht.scatter2
+      ) %>%
+      config(
+        displayModeBar = FALSE
+      ) 
+    
+    
+    
+  })
+  
+  
+  
 
   # timelines ----
 
@@ -789,14 +888,14 @@ server <- function(input, output, session) {
         )
       ),
       showlegend = FALSE,
-      title = list(
-        text = paste("Arlington Overall:", t1.in.lab() ),
-        font = list(
-          family = c("Arial", "Droid Sans", "Times New Roman"),
-          size = 17
-        ),
-        y = 0.98
-      ),
+      # title = list(
+      #   text = paste("Arlington Overall:", t1.in.lab() ),
+      #   font = list(
+      #     family = c("Arial", "Droid Sans", "Times New Roman"),
+      #     size = 17
+      #   ),
+      #   y = 0.98
+      # ),
       xaxis = list(
         title = list(
           text = ""
@@ -834,15 +933,15 @@ server <- function(input, output, session) {
 
   ggplotly(t2, height = t2height)  %>%
     layout(
-      title = list(
-        text= paste("By Precinct:", t1.in.lab() ),
-        font = list(
-          family = c("Arial", "Droid Sans", "Times New Roman"),
-          size = 17
-        ),
-        y = 0.95,
-        hovertemplate = ht.timeline
-      ),
+      # title = list(
+      #   text= paste("By Precinct:", t1.in.lab() ),
+      #   font = list(
+      #     family = c("Arial", "Droid Sans", "Times New Roman"),
+      #     size = 17
+      #   ),
+      #   y = 0.95,
+      # ),
+      hovertemplate = ht.timeline,
       legend = list(
         orientation = 'h',
         y = -0.28,
