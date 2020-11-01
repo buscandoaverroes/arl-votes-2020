@@ -298,8 +298,13 @@ sp.norm <- scatterpolar %>%
 
 # create misc values
 arl.tot <- vote.data[vote.data$`Precinct.Name` %in% "Arlington Totals",] %>%
+  filter(date == latestdate) 
+vote.tot <- vote.data[vote.data$`Precinct.Name` %in% "Arlington Totals",] %>%
   filter(date == latestdate)
-
+vote.tot.yest <- vote.data[vote.data$`Precinct.Name` %in% "Arlington Totals",] %>%
+  filter(date == yesterday) # not really yesterday but -1 day
+vote.pr <- vote %>%
+  filter(Precinct.Name != "Arlington Totals") 
 
 
 
@@ -313,6 +318,9 @@ if (export == 1) {
 save(
   vote.data,
   arl.tot,
+  vote.tot,
+  vote.pr,
+  vote.tot.yest,
   sp.norm,
   arl.tot,
   file = file.path(root.data, "rdata/arl-vote2020.Rdata")

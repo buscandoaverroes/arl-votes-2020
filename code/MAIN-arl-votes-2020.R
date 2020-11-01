@@ -57,6 +57,7 @@ totalsrowv2 <- 13 # the row on page 2 that contains the total field
 
 # latest date
 latestdate <- lubridate::as_date(ymd("2020-10-30"))
+yesterday  <- lubridate::as_date(ymd("2020-10-29")) # the day before latest
 
 # totals
 e.totmail <- 1 # error term for total mail. My counts are correct as far as I know

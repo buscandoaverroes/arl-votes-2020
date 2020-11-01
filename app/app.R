@@ -30,10 +30,9 @@ date.data <- "2020-10-30"
 # format date and make data changes.
 vote <- vote.data
 
-vote.pr <- vote %>%
-  filter(Precinct.Name != "Arlington Totals") 
-vote.tot <- vote %>%
-  filter(Precinct.Name == "Arlington Totals" & date == date.data)
+# 
+# vote.tot <- vote %>%
+#   filter(Precinct.Name == "Arlington Totals" & date == date.data)
 
 
 # define basemap
@@ -172,17 +171,29 @@ ui <- navbarPage(
           fluidPage(
             
             fluidRow(
+              column( 8, align = 'left',
               tags$h1(tags$b("Arlington Votes 2020")),
               tags$h4(tags$b("Tracking the latest voting totals for Arlington County, Virginia.")),
-              tags$br(), tags$br(),
             ),
             
-            fluidRow(
-                    valueBox(paste0(vote.tot$Active.Turnout, '%'), 'Latest Estimated Turnout', width = 4, color = 'yellow'),
-                    valueBox(prettyNum(vote.tot$Total.Votes, big.mark = ','),
-                             'Total Votes', width = 4, color = 'yellow'),
-                    valueBox(up.date, "Data Update", color = 'fuchsia'),tags$br(),tags$br()),
+             column(4, align = 'center',
+                           valueBox(up.date, "Data Update", color = 'fuchsia', width = 12)),
+              
+            ),
+            tags$br(),
+
             
+            fluidRow(
+                    column(6, align = 'center',
+                           tags$h3("Estimated Turnout"),
+                          plotlyOutput('gauge1', height = "150px")
+                    ),
+                    column(6, align = 'center',
+                           tags$h3("Total Votes"),
+                          plotlyOutput('gauge2', height = "150px")
+                    )
+                   
+            ),
             
             tags$h2(tags$b("Voting Method Animation")),
             tags$body("Tap 'play' to animate the changes over time. Dot size is proportionate
@@ -542,6 +553,100 @@ ui <- navbarPage(
 # Define server logic
 server <- function(input, output, session) {
 
+  # status gauges ----
+  output$gauge1 <- renderPlotly({
+    
+    plot_ly(
+      type = 'indicator',
+      mode = 'gauge+number+delta',
+      number= list(
+        valueformat = "%"
+      ),
+      value= round(vote.tot$Active.Turnout / 100, 3),
+      domain= list(x = c(0,1), y = c(0,1)),
+      delta= list(
+        reference = vote.tot.yest$Active.Turnout / 100,
+        valueformat= "%"
+      ),
+      gauge = list(
+        shape= 'angular',
+        axis = list(
+          range = list(NULL, 1),
+          tickmode = 'array',
+          tickvals = c(0,0.20,0.40,0.60,0.80, 1),
+          tickformat = "%"
+        ),
+        steps= list(
+          list(range = c(0,50), color = '#ffffff'), # currently set to white, 
+          list(range = c(50,80), color= '#ffffff'),
+          list(range = c(80,100), color= '#ffffff')
+          ),
+        bar = list(
+          color = "#ffd700",
+          thickness = 0.75,
+          line = list(
+            width = 0
+          )
+        )
+        )
+      ) %>%
+      layout(
+        margin= list(l=20, r=30)
+      )
+    
+  })
+  
+  
+  # total votes 
+  output$gauge2 <- renderPlotly({
+    
+    plot_ly(
+      type = 'indicator',
+      mode = 'gauge+number+delta',
+      number= list(
+        valueformat = ","
+      ),
+      value= vote.tot$Total.Votes,
+      domain= list(x = c(0,1), y = c(0,1)),
+      delta= list(
+        reference = vote.tot.yest$Total.Votes,
+        valueformat= ","
+      ),
+      gauge = list(
+        shape= 'angular',
+        threshold = list(
+          line = list(color = 'red', width = 4),
+          thickness = 0.75,
+          value = 164498
+        ),
+        axis = list(
+          range = list(NULL, 180000),
+          tickmode = 'array',
+          tickvals = c(0,30000,60000,90000,120000, 150000, 180000),
+          tickformat = "," ,
+          tickangle = 0
+        ),
+        steps= list(
+          list(range = c(0,50), color = '#ffffff'), # currently set to white, 
+          list(range = c(50,80), color= '#ffffff'),
+          list(range = c(80,100), color= '#ffffff')
+          ),
+        bar = list(
+          color = "#ffd700",
+          thickness = 0.75,
+          line = list(
+            width = 0
+          )
+        )
+        )
+      ) %>%
+      layout(
+        margin= list(l=20, r=30)
+      )
+    
+  })
+  
+  
   
   # scatter ----
   
@@ -635,7 +740,7 @@ server <- function(input, output, session) {
   t1 <-
     ggplot(vote[vote$Precinct.Name %in% "Arlington Totals",],
                 aes(x = date,
-                    y =  eval(as.name(t1.in() )),
+                    y =  eval(as.name(t1.in() ))
                     )) + # input$timeline.in1
     geom_line(aes(color = Precinct.Name)) +
     geom_area(alpha = 0.1, fill = '#ffa500') +
