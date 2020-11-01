@@ -333,6 +333,9 @@ save(
 save(
   vote.data,
   arl.tot,
+  vote.tot,
+  vote.pr,
+  vote.tot.yest,
   sp.norm,
   arl.tot,
   file = file.path(app, "data/arl-vote2020.Rdata")
