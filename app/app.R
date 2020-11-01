@@ -24,8 +24,8 @@ load("data/arl-vote2020.Rdata")
 
 
 # update
-up.date <- "30 Oct, 2020"
-date.data <- "2020-10-30"
+up.date <- "Oct 31"
+date.data <- "2020-10-31"
 
 # format date and make data changes.
 vote <- vote.data
@@ -81,7 +81,7 @@ heatmapvars <- c("Total.Votes", "Mail.Received", "Early.Voted",
 
 
 
-pop.filter <- vote[vote$date %in% "2020-10-27",] %>%
+pop.filter <- vote[vote$date %in% "2020-10-31",] %>%
   select(popupvars)
 
 # # forheatmap
@@ -171,15 +171,41 @@ ui <- navbarPage(
           fluidPage(
             
             fluidRow(
-              column( 8, align = 'left',
+              column( 12, align = 'left',
               tags$h1(tags$b("Arlington Votes 2020")),
               tags$h4(tags$b("Tracking the latest voting totals for Arlington County, Virginia.")),
-            ),
+            )), tags$br(),
             
-             column(4, align = 'center',
-                           valueBox(up.date, "Data Update", color = 'fuchsia', width = 12)),
+            # column(4, align = 'center', 
+            #        tags$br(),
+            #        tags$h3(paste(up.date, ": Update")))
+             
+            
+            # valueboxrow
+            fluidRow(
+              column(3, align = 'center',
+                     valueBox(up.date, "Data Update", color = 'black', width = NULL)),
+              
+              # Total Votes
+              column(3, align = 'center',
+                     valueBox(prettyNum(vote.tot$Total.Votes, big.mark = ','),
+                              "Total Votes", color = 'purple', width = NULL)),
+              
+              
+              # Mail to Early Ratio
+              column(3, align = 'center',
+                     valueBox(vote.tot$Early.to.Mail.Ratio,
+                              "Early to Mail Ratio", color = 'purple', width = NULL)),
+              
+              # Mail Ballot Return Rate 
+              column(3, align = 'center',
+                     valueBox( paste(100*vote.tot$Mail.Ballot.Return.Rate, "%"),
+                              "Mail Vote Return Rate", color = 'purple', width = NULL))
               
             ),
+            
+            
+            
             tags$br(),
 
             
@@ -189,14 +215,15 @@ ui <- navbarPage(
                           plotlyOutput('gauge1', height = "150px")
                     ),
                     column(6, align = 'center',
-                           tags$h3("Total Votes"),
+                           tags$h3("Mail Ballots Counted"),
                           plotlyOutput('gauge2', height = "150px")
                     )
                    
             ),
             
-            tags$h2(tags$b("Voting Method Animation")),
-            tags$body("Tap 'play' to animate the changes over time. Dot size is proportionate
+            tags$h2(tags$b("Votes by Method")),
+            tags$body("Tap 'play' to show changes over time. You can adjust the animiation settings below.
+                      Dot size is proportionate
                       to active registered voter counts in each precinct."),
             tags$br(), tags$br(),
             
@@ -251,7 +278,9 @@ ui <- navbarPage(
             tags$br(),tags$br(),
             
             tags$h2(tags$b("Voting Timelines")),
-            tags$body("Select a stat from the dropdown menu. You can zoom in on the graphs via click-and-drag."),
+            tags$body("Select a stat from the dropdown menu.
+                      You can zoom via click-and-drag. To isolate a single precinct,
+                      double click its name in the legend below. Then single click other precincts to compare."),
             tags$br(), tags$br(), tags$br(),
             fluidRow(
               column(12, align = 'center',
@@ -582,7 +611,7 @@ server <- function(input, output, session) {
           list(range = c(80,100), color= '#ffffff')
           ),
         bar = list(
-          color = "#ffd700",
+          color = "#d9f0a3",
           thickness = 0.75,
           line = list(
             width = 0
@@ -604,26 +633,21 @@ server <- function(input, output, session) {
       type = 'indicator',
       mode = 'gauge+number+delta',
       number= list(
-        valueformat = ","
+        valueformat = "%"
       ),
-      value= vote.tot$Total.Votes,
+      value= round(vote.tot$Percent.Mail.Counted / 100, 3),
       domain= list(x = c(0,1), y = c(0,1)),
       delta= list(
-        reference = vote.tot.yest$Total.Votes,
-        valueformat= ","
+        reference = vote.tot.yest$Percent.Mail.Counted / 100,
+        valueformat= "%"
       ),
       gauge = list(
         shape= 'angular',
-        threshold = list(
-          line = list(color = 'red', width = 4),
-          thickness = 0.75,
-          value = 164498
-        ),
         axis = list(
-          range = list(NULL, 180000),
+          range = list(NULL, 1),
           tickmode = 'array',
-          tickvals = c(0,30000,60000,90000,120000, 150000, 180000),
-          tickformat = "," ,
+          tickvals = c(0,0.20,0.40,0.60,0.80, 1),
+          tickformat = "%",          
           tickangle = 0
         ),
         steps= list(
@@ -632,7 +656,7 @@ server <- function(input, output, session) {
           list(range = c(80,100), color= '#ffffff')
           ),
         bar = list(
-          color = "#ffd700",
+          color = "#78c679",
           thickness = 0.75,
           line = list(
             width = 0
@@ -700,7 +724,7 @@ server <- function(input, output, session) {
     ) %>% # end layout
     colorbar(
       title = paste("% Active", "<br>Turnout"),
-      x = 0.95,
+      x = 0.90,
       y = 0.5,
       len = 0.5,
       lenmode = 'percent',
@@ -824,7 +848,7 @@ server <- function(input, output, session) {
         y = -0.28,
         x = 0,
         title = list(
-          text = "Precincts: double click to isolate, single click to add",
+          text = "Precincts: double or single click",
           side = 'top',
           font = list(
             family = c("Arial", "Droid Sans", "Times New Roman"),

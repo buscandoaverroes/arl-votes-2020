@@ -207,6 +207,7 @@ source(file = file.path(root.code, "code/votes-27-oct.R"))
 source(file = file.path(root.code, "code/votes-28-oct.R"))
 source(file = file.path(root.code, "code/votes-29-oct.R"))
 source(file = file.path(root.code, "code/votes-30-oct.R"))
+source(file = file.path(root.code, "code/votes-31-oct.R"))
 
 
 # import the by-day objects the above scripts generate
@@ -223,12 +224,14 @@ vote27oct <- readRDS(file = file.path(votes, "27-oct.Rda"))
 vote28oct <- readRDS(file = file.path(votes, "28-oct.Rda"))
 vote29oct <- readRDS(file = file.path(votes, "29-oct.Rda"))
 vote30oct <- readRDS(file = file.path(votes, "30-oct.Rda"))
+vote31oct <- readRDS(file = file.path(votes, "31-oct.Rda"))
 
 
 
 # append all
 vote.data <-
   bind_rows(
+    vote31oct,
     vote30oct,
     vote29oct,
     vote28oct,
@@ -303,7 +306,7 @@ vote.tot <- vote.data[vote.data$`Precinct.Name` %in% "Arlington Totals",] %>%
   filter(date == latestdate)
 vote.tot.yest <- vote.data[vote.data$`Precinct.Name` %in% "Arlington Totals",] %>%
   filter(date == yesterday) # not really yesterday but -1 day
-vote.pr <- vote %>%
+vote.pr <- vote.data %>%
   filter(Precinct.Name != "Arlington Totals") 
 
 

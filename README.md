@@ -129,7 +129,8 @@ to Mail-in Voting.
 total of Mail Ballots Counted as the natural numerator.
 
 ### Other Notes
-
+- October 31st data: The pdf document that I refer to as October 31st is actually titled "November 1st"
+as the report was generated at about 7:50am on November 1st; there was also no report generated for October 31st. I decided that it was a reasonable assumption to take this "November 1st" document as the updates for the end of the day of October 31st. Doing this is consistent with other daily reports, which are often generated after midnight to total the counts of the day that ended just a few hours prior, and it also avoids having two entries for November 1st.
 - Rounding: For readability, I round all non-integer values that I calculate
 myself to relevant digits. This does occasionally result in components of a
 whole that do not sum perfectly. For example, **Mail Voter Turnout** and

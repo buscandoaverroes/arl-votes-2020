@@ -56,13 +56,16 @@ max2v2 <- 12
 totalsrowv2 <- 13 # the row on page 2 that contains the total field
 
 # latest date
-latestdate <- lubridate::as_date(ymd("2020-10-30"))
-yesterday  <- lubridate::as_date(ymd("2020-10-29")) # the day before latest
+latestdate <- lubridate::as_date(ymd("2020-10-31"))
+yesterday  <- lubridate::as_date(ymd("2020-10-30")) # the day before latest
 
 # totals
 e.totmail <- 1 # error term for total mail. My counts are correct as far as I know
 e.outstanding <- 1 # error term for Mail.Outstanding.
 
+
+e.totmail31 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding31 <- 1 # error term for Mail.Outstanding.
 
 e.totmail30 <- 1 # error term for total mail. My counts are correct as far as I know
 e.outstanding30 <- 1 # error term for Mail.Outstanding.
