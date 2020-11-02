@@ -204,6 +204,11 @@ source(file = file.path(root.code, "code/votes-23-oct.R"))
 source(file = file.path(root.code, "code/votes-25-oct.R"))
 source(file = file.path(root.code, "code/votes-26-oct.R"))
 source(file = file.path(root.code, "code/votes-27-oct.R"))
+source(file = file.path(root.code, "code/votes-28-oct.R"))
+source(file = file.path(root.code, "code/votes-29-oct.R"))
+source(file = file.path(root.code, "code/votes-30-oct.R"))
+source(file = file.path(root.code, "code/votes-31-oct.R"))
+
 
 # import the by-day objects the above scripts generate
 vote18oct <- readRDS(file = file.path(votes, "18-oct.Rda"))
@@ -217,12 +222,18 @@ vote25oct <- readRDS(file = file.path(votes, "25-oct.Rda"))
 vote26oct <- readRDS(file = file.path(votes, "26-oct.Rda"))
 vote27oct <- readRDS(file = file.path(votes, "27-oct.Rda"))
 vote28oct <- readRDS(file = file.path(votes, "28-oct.Rda"))
+vote29oct <- readRDS(file = file.path(votes, "29-oct.Rda"))
+vote30oct <- readRDS(file = file.path(votes, "30-oct.Rda"))
+vote31oct <- readRDS(file = file.path(votes, "31-oct.Rda"))
 
 
 
 # append all
 vote.data <-
   bind_rows(
+    vote31oct,
+    vote30oct,
+    vote29oct,
     vote28oct,
     vote27oct,
     vote26oct,
@@ -290,8 +301,13 @@ sp.norm <- scatterpolar %>%
 
 # create misc values
 arl.tot <- vote.data[vote.data$`Precinct.Name` %in% "Arlington Totals",] %>%
+  filter(date == latestdate) 
+vote.tot <- vote.data[vote.data$`Precinct.Name` %in% "Arlington Totals",] %>%
   filter(date == latestdate)
-
+vote.tot.yest <- vote.data[vote.data$`Precinct.Name` %in% "Arlington Totals",] %>%
+  filter(date == yesterday) # not really yesterday but -1 day
+vote.pr <- vote.data %>%
+  filter(Precinct.Name != "Arlington Totals") 
 
 
 
@@ -305,6 +321,9 @@ if (export == 1) {
 save(
   vote.data,
   arl.tot,
+  vote.tot,
+  vote.pr,
+  vote.tot.yest,
   sp.norm,
   arl.tot,
   file = file.path(root.data, "rdata/arl-vote2020.Rdata")
@@ -314,6 +333,9 @@ save(
 save(
   vote.data,
   arl.tot,
+  vote.tot,
+  vote.pr,
+  vote.tot.yest,
   sp.norm,
   arl.tot,
   file = file.path(app, "data/arl-vote2020.Rdata")

@@ -24,16 +24,15 @@ load("data/arl-vote2020.Rdata")
 
 
 # update
-up.date <- "28 Oct, 2020"
-date.data <- "2020-10-28"
+up.date <- "Oct 31"
+date.data <- "2020-10-31"
 
-
+# format date and make data changes.
 vote <- vote.data
-vote.pr <- vote %>%
-  filter(Precinct.Name != "Arlington Totals")
-vote.tot <- vote %>%
-  filter(Precinct.Name == "Arlington Totals" & date == date.data)
 
+# 
+# vote.tot <- vote %>%
+#   filter(Precinct.Name == "Arlington Totals" & date == date.data)
 
 
 # define basemap
@@ -82,7 +81,7 @@ heatmapvars <- c("Total.Votes", "Mail.Received", "Early.Voted",
 
 
 
-pop.filter <- vote[vote$date %in% "2020-10-27",] %>%
+pop.filter <- vote[vote$date %in% "2020-10-31",] %>%
   select(popupvars)
 
 # # forheatmap
@@ -97,6 +96,9 @@ pop.filter <- vote[vote$date %in% "2020-10-27",] %>%
 # color 'n-tiles'
 ntiles <- c(0, 1/6, 1/3, 0.5, 2/3, 5/6, 1)
 
+
+
+# SETTINGS          - - - - - - - - - - - - - - - - - -- - - ----
 # other color settings
 color.av <- '#778899'
 color.1  <- 'Aqua' #
@@ -110,8 +112,12 @@ color.blk<- '#000000'
 a.sp = 0.3   # alpha for scatter polar
 w.sp = 2      # width of scatter polar boundary lines
 
+# heights
 t1height = 500 # timeline 1 height 
 t2height = 500 # timeline 2 height 
+s2height = 700 # timeline 2 height 
+
+
 
 # hovertext settings
 ht.polar <- paste("%{theta}",
@@ -121,7 +127,24 @@ ht.polar <- paste("%{theta}",
 ht.timeline <- paste("%{x}",
                      "<br>%{y:.1f}") #  <extra></extra>
 
+ht.scatter <- paste("<b>%{text}</b>",
+                    "<br>Mail: %{x:,f}",
+                    "<br>Early: %{y:,f}",
+                    "<br>Turnout: %{marker.color:.1f}%",
+                    "<extra></extra>") #  
 
+ht.scatter2 <- paste("<b>%{text}</b>",
+                    "<br>Early-to-Mail Ratio: %{x:.1f}",
+                    #"<br>Date: %{meta[i]}", # access this in scatter>meta?
+                    "<br>Turnout: %{marker.color:.1f}%",
+                    "<extra></extra>") # 
+
+ht.scatter3 <- paste("<b>%{text}</b>",
+                    #"<br> Active Registered: %{marker.size:,f}",
+                    "<br>Mail Ballot Return Rate: %{x:.2f}",
+                    "<br>Outstanding Votes: %{y:,f}",
+                    "<br>Turnout: %{marker.color:.1f}%",
+                    "<extra></extra>") #  
 
 # correlation data
 # ## from https://stackoverflow.com/a/13112337/4747043
@@ -163,62 +186,143 @@ ui <- navbarPage(
 
 
         tabPanel(
-          "Timeline",
+          "Home",
           fluidPage(
             
             fluidRow(
+              column( 12, align = 'left',
               tags$h1(tags$b("Arlington Votes 2020")),
               tags$h4(tags$b("Tracking the latest voting totals for Arlington County, Virginia.")),
-              tags$br(), tags$br(),
+            )), tags$br(),
+            
+            # column(4, align = 'center', 
+            #        tags$br(),
+            #        tags$h3(paste(up.date, ": Update")))
+             
+            
+            # valueboxrow
+            fluidRow(
+              column(3, align = 'center',
+                     valueBox(up.date, "Data Update", color = 'black', width = NULL)),
+              
+              # Total Votes
+              column(3, align = 'center',
+                     valueBox(prettyNum(vote.tot$Total.Votes, big.mark = ','),
+                              "Total Votes", color = 'purple', width = NULL)),
+              
+              
+              # Mail to Early Ratio
+              column(3, align = 'center',
+                     valueBox(vote.tot$Early.to.Mail.Ratio,
+                              "Early to Mail Ratio", color = 'purple', width = NULL)),
+              
+              # Mail Ballot Return Rate 
+              column(3, align = 'center',
+                     valueBox( paste(100*vote.tot$Mail.Ballot.Return.Rate, "%"),
+                              "Mail Vote Return Rate", color = 'purple', width = NULL))
+              
             ),
             
-            fluidRow(
-                    valueBox(paste0(vote.tot$Active.Turnout, '%'), 'Latest Estimated Turnout', width = 4, color = 'yellow'),
-                    valueBox(prettyNum(vote.tot$Total.Votes, big.mark = ','),
-                             'Total Votes', width = 4, color = 'yellow'),
-                    valueBox(up.date, "Data Update", color = 'fuchsia'),tags$br(),tags$br()),
-
-            tags$h2(tags$b("Voting Statistics Over Time")),
-            tags$body("Select a stat from the dropdown menu. You can zoom in on the graphs via click-and-drag."),
-            tags$br(), tags$br(), tags$br(),
-            fluidRow(
-              column(12, align = 'center',
-                     # timeline input panel ----
-                     pickerInput(
-                       'timeline.in1',
-                       "Graph:",
-                       choices = arltotalvars,
-                       selected = "Total.Votes",
-                       multiple = FALSE,
-                       width = '350px',
-                       inline = TRUE,
-                       options = list(
-                         liveSearch = TRUE,
-                         liveSearchNormalize = TRUE,
-                         liveSearchStyle = 'contains',
-                         selectOnTab = TRUE,
-                         showTick = TRUE,
-                         title = "Title",
-                         virtualScroll = TRUE,
-                         width = 'auto',
-                         dropupAuto = TRUE
-                       )
-                     )
-
-            )),
+            
             
             tags$br(),
+
             
-
-
-            fluidRow(tags$br(),tags$br(),plotlyOutput('timeline1', width = '100%', height = t1height)),
-            fluidRow(tags$br(),plotlyOutput('timeline2', width = '100%', height = t2height)),
-
+            fluidRow(
+                    column(6, align = 'center',
+                           tags$h3("Estimated Turnout"),
+                          plotlyOutput('gauge1', height = "150px")
+                    ),
+                    column(6, align = 'center',
+                           tags$h3("Mail Ballots Counted"),
+                          plotlyOutput('gauge2', height = "150px")
+                    )
+                   
+            ),
+            
+            tags$h2(tags$b("Voting Totals Animations")),
+            tags$body("In each chart, tap 'play' to show changes over time.
+                      You can adjust the animiation settings for all charts below.
+                      The dot size is proportionate
+                      to active registered voter counts in each precinct."),
+            tags$br(), tags$br(),
+            
+            
+            
+          # Plotly time sliders ----   
+            fluidRow(
+              
+              # slider 1
+              column(4, align = 'center',
+                     sliderInput('in_pause_dur',
+                                 "Pause Duration",
+                                 min = 0,
+                                 max = 1,
+                                 value = 0.1,
+                                 ticks = FALSE,
+                                 step = 0.1,
+                                 width = '75%'
+                                 #post = " (s)"
+                     )
+                     ),
+            
+              
+              # slider 2 --- 
+              column(4, align = 'center',
+                     sliderInput('in_trans_dur',
+                                 "Transition Duration",
+                                 min = 0,
+                                 max = 1,
+                                 value = 0.4,
+                                 ticks = FALSE,
+                                 step = 0.1,
+                                 width = '75%'
+                               #  post = "()"
+                                 )
+                     
+              ),
+              
+              # checkbox 1 ---
+              column(4, align = 'center',
+                     radioButtons(
+                       'in_ease_type',
+                       "Animation Type",
+                       choices = c("Linear" = "linear",
+                                   "Elastic" = "elastic"),
+                       inline = FALSE
+                       
+                     )
+              ),
+              
+              
+            ),
+            
+          
+          
+          # scatter 1 output ----
+            fluidRow(column(12, align = 'center', tags$h3(tags$b("Votes by Method")))),
+            fluidRow(plotlyOutput('scatter1', width = '100%', height = t1height)),
+            tags$br(),tags$br(),
+          
+          # scatter 2 output ----
+          fluidRow(column(12, align = 'center', tags$h3(tags$b("Early Voting-to-Mail Ratio and Active Turnout")),
+                          tags$body("A higher ratio indicates that a greater share of votes came from in-person
+                                    early voting."))),
+          fluidRow(tags$br(),tags$br(),plotlyOutput('scatter2', width = '100%', height = s2height)),
+          tags$br(),tags$br(),
+          
+          # scatter 3 output ----
+          fluidRow(column(12, align = 'center', tags$h3(tags$b("Mail Ballot Return Rate and Oustanding Votes")),
+                          tags$body("The return rate is the fraction of mail ballots returned to Arlington over the number
+                                    of mail ballots requested; 1 indicates that all ballots are returned.
+                                    Oustanding Votes is the remainder of Active Registered Voter minus all mail and early votes
+                                    received by precinct."))),
+          fluidRow(tags$br(),tags$br(),plotlyOutput('scatter3', width = '100%', height = t1height)),
+          tags$br(),tags$br(),
+          
 
           ) # end fluidpage
-
-
-        ), # end tab panel timeline
+        ), # end tab panel home
 
 
         # tabPanel( # map (coming soon)  ----
@@ -310,6 +414,59 @@ ui <- navbarPage(
         #
         #     ), # close map tab panel
 
+        
+        tabPanel( # Timeline tab ----
+          "Timeline",
+          fluidPage(
+            
+            tags$h2(tags$b("Voting Timelines")),
+            tags$body("Select a stat from the dropdown menu.
+                      You can zoom via click-and-drag. To isolate a single precinct,
+                      double click its name in the legend below. Then single click other precincts to compare."),
+            tags$br(), tags$br(), tags$br(),
+            fluidRow(
+              column(12, align = 'center',
+                     # timeline input panel ----
+                     pickerInput(
+                       'timeline.in1',
+                       "Graph:",
+                       choices = arltotalvars,
+                       selected = "Total.Votes",
+                       multiple = FALSE,
+                       width = '350px',
+                       inline = TRUE,
+                       options = list(
+                         liveSearch = TRUE,
+                         liveSearchNormalize = TRUE,
+                         liveSearchStyle = 'contains',
+                         selectOnTab = TRUE,
+                         showTick = TRUE,
+                         title = "Title",
+                         virtualScroll = TRUE,
+                         width = 'auto',
+                         dropupAuto = TRUE
+                       )
+                     )
+                     
+              )),
+            
+            tags$br(),tags$br(),
+            
+            
+            fluidRow(column(12, align = 'center',
+                            tags$h3(tags$b("Arlington Totals")))),
+            fluidRow(plotlyOutput('timeline1', width = '100%', height = t1height)),
+            tags$br(),tags$br(),
+            fluidRow(column(12, align = 'center',
+                            tags$h3(tags$b("By Precinct")))), 
+            fluidRow(tags$br(),plotlyOutput('timeline2', width = '100%', height = t2height)),
+            
+            
+          ) # end fluidpage
+        ), #end tabpanel timeline
+        
+        
+        
         tabPanel( # stats ----
           "Stats",
           fluidPage(
@@ -403,9 +560,11 @@ ui <- navbarPage(
                        )
               )
             ),
-
-
-            plotlyOutput('polar', width = '100%', height = '600px'),
+            
+            # polar output
+            fluidRow(column(12, align = 'center',
+               plotlyOutput('polar', width = '100%', height = '600px')
+                )),
 
 
 
@@ -481,7 +640,303 @@ ui <- navbarPage(
 # Define server logic
 server <- function(input, output, session) {
 
+  # status gauges ----
+  output$gauge1 <- renderPlotly({
+    
+    plot_ly(
+      type = 'indicator',
+      mode = 'gauge+number+delta',
+      number= list(
+        valueformat = "%"
+      ),
+      value= round(vote.tot$Active.Turnout / 100, 3),
+      domain= list(x = c(0,1), y = c(0,1)),
+      delta= list(
+        reference = vote.tot.yest$Active.Turnout / 100,
+        valueformat= "%"
+      ),
+      gauge = list(
+        shape= 'angular',
+        axis = list(
+          range = list(NULL, 1),
+          tickmode = 'array',
+          tickvals = c(0,0.20,0.40,0.60,0.80, 1),
+          tickformat = "%"
+        ),
+        steps= list(
+          list(range = c(0,50), color = '#ffffff'), # currently set to white, 
+          list(range = c(50,80), color= '#ffffff'),
+          list(range = c(80,100), color= '#ffffff')
+          ),
+        bar = list(
+          color = "#d9f0a3",
+          thickness = 0.75,
+          line = list(
+            width = 0
+          )
+        )
+        )
+      ) %>%
+      layout(
+        margin= list(l=20, r=30)
+      )
+    
+  })
+  
+  
+  # total votes 
+  output$gauge2 <- renderPlotly({
+    
+    plot_ly(
+      type = 'indicator',
+      mode = 'gauge+number+delta',
+      number= list(
+        valueformat = "%"
+      ),
+      value= round(vote.tot$Percent.Mail.Counted / 100, 3),
+      domain= list(x = c(0,1), y = c(0,1)),
+      delta= list(
+        reference = vote.tot.yest$Percent.Mail.Counted / 100,
+        valueformat= "%"
+      ),
+      gauge = list(
+        shape= 'angular',
+        axis = list(
+          range = list(NULL, 1),
+          tickmode = 'array',
+          tickvals = c(0,0.20,0.40,0.60,0.80, 1),
+          tickformat = "%",          
+          tickangle = 0
+        ),
+        steps= list(
+          list(range = c(0,50), color = '#ffffff'), # currently set to white, 
+          list(range = c(50,80), color= '#ffffff'),
+          list(range = c(80,100), color= '#ffffff')
+          ),
+        bar = list(
+          color = "#78c679",
+          thickness = 0.75,
+          line = list(
+            width = 0
+          )
+        )
+        )
+      ) %>%
+      layout(
+        margin= list(l=20, r=30)
+      )
+    
+  })
+  
+  
+  
+  # scatter ----
+  
+  ## define reactive sum of two input values
+  frame_trans <- reactive({ (1000 * input$in_trans_dur) })
+  frame_dur <- reactive({ frame_trans() + (1000 * input$in_pause_dur)  })
+  # ease <- reactive({ if_else(input$in_ease_type == TRUE, 
+  #                            true = "elastic",
+  #                            false= "linear")  })
+  
+  output$scatter1 <- renderPlotly({
+    
+    scatter <- plot_ly() %>%
+      add_trace(
+      data = vote.pr,
+      type = 'scatter', 
+      mode = 'markers',
+      x = ~Mail.Received, # Mail.Ballot.Return.Rate
+      y = ~Early.Voted, # Active.Turnout
+      size = ~Active.Registered,
+      color = ~Active.Turnout, # Early.to.Mail.Ratio
+      frame = ~date,
+      text = ~Precinct.Name
+    ) %>%
+    layout(
+      title = list(
+        text = "",
+        font = list(
+          family = c("Arial", "Droid Sans", "Times New Roman"),
+          size = 18
+        )
+      ),
+      yaxis = list(
+        title = list(
+          text = "Early In-Person Votes",
+          font = list(
+            family = c("Arial", "Droid Sans", "Times New Roman"),
+            size = 17
+          )
+        )
+      ),
+      xaxis = list(
+        title = list(
+          text = "Mail-in Votes",
+          font = list(
+            family = c("Arial", "Droid Sans", "Times New Roman"),
+            size = 17
+          )
+        )
+      )
+    ) %>% # end layout
+    colorbar(
+      title = paste("% Active", "<br>Turnout"),
+      x = 0.90,
+      y = 0.5,
+      len = 0.5,
+      lenmode = 'percent',
+      thickness = 12
+      ) %>%
+    animation_opts(
+        frame = frame_dur(),
+        transition = frame_trans() ,
+        easing = input$in_ease_type,
+        redraw = FALSE
+      ) %>%
+    animation_slider(
+      currentvalue = list(prefix = "Date ", font = list(color='red')),
+      y = -0.1
+    ) %>%
+      style(
+        hovertemplate = ht.scatter
+      ) %>%
+      config(
+        displayModeBar = FALSE
+      ) 
+    
+  })
+  
 
+  # scatter 2: Early to Mail Ratio to Active Turnout Overtime 
+  output$scatter2 <- renderPlotly({
+    
+    plot_ly() %>%
+      add_trace(
+        data = vote.pr,
+        type = 'scatter', 
+        mode = 'markers',
+        x = ~Early.to.Mail.Ratio, # Mail.Ballot.Return.Rate
+        y = ~Precinct.Name, # Active.Turnout
+        size = ~Active.Registered,
+        color = ~Active.Turnout, # Early.to.Mail.Ratio
+        frame = ~date,
+        text = ~Precinct.Name
+      ) %>%
+      layout(
+        title = "",
+        xaxis = list(
+          title = "Early Voting-to-Mail Ratio"
+        ),
+        yaxis = list(
+          showgrid = FALSE,
+          title = "Precinct",
+          showticklabels = FALSE
+        ),
+        margin = list(l = 100)
+      ) %>% # end layout
+      colorbar(
+        title = paste("% Active", "<br>Turnout"),
+        x = 0.90,
+        y = 0.5,
+        len = 0.5,
+        lenmode = 'percent',
+        thickness = 12
+      ) %>%
+      animation_opts(
+        frame = frame_dur(),
+        transition = frame_trans(),
+        easing = input$ease_type,
+        redraw = FALSE
+      ) %>%
+      animation_slider(
+        currentvalue = list(prefix = "Date ", font = list(color='red')),
+        y = -0.1
+      ) %>%
+      style(
+        hovertemplate = ht.scatter2
+      ) %>%
+      config(
+        displayModeBar = FALSE
+      ) 
+
+    
+  })
+  
+  
+  # scatter 3 
+  output$scatter3 <- renderPlotly({
+    
+    scatter <- plot_ly() %>%
+      add_trace(
+        data = vote.pr,
+        type = 'scatter', 
+        mode = 'markers',
+        x = ~Mail.Ballot.Return.Rate, 
+        y = ~Outstanding.Votes, 
+        size = ~Active.Registered,
+        color = ~Active.Turnout,
+        frame = ~date,
+        text = ~Precinct.Name
+      ) %>%
+      layout(
+        title = list(
+          text = "",
+          font = list(
+            family = c("Arial", "Droid Sans", "Times New Roman"),
+            size = 18
+          )
+        ),
+        yaxis = list(
+          rangemode = 'tozero',
+          title = list(
+            text = "Oustanding Votes",
+            font = list(
+              family = c("Arial", "Droid Sans", "Times New Roman"),
+              size = 17
+            )
+          )
+        ),
+        xaxis = list(
+          title = list(
+            text = "Mail Ballot Return Rate",
+            font = list(
+              family = c("Arial", "Droid Sans", "Times New Roman"),
+              size = 17
+            )
+          )
+        )
+      ) %>% # end layout
+      colorbar(
+        title = paste("% Active", "<br>Turnout"),
+        x = 0.90,
+        y = 1.3,
+        len = 0.7,
+        lenmode = 'percent',
+        thickness = 12
+      ) %>%
+      animation_opts(
+        frame = frame_dur(),
+        transition = frame_trans() ,
+        easing = input$in_ease_type,
+        redraw = FALSE
+      ) %>%
+      animation_slider(
+        currentvalue = list(prefix = "Date ", font = list(color='red')),
+        y = -0.1
+      ) %>%
+      style(
+        hovertemplate = ht.scatter3
+      ) %>%
+      config(
+        displayModeBar = FALSE
+      ) 
+    
+    
+    
+  })
+  
+  
 
   # timelines ----
 
@@ -494,7 +949,7 @@ server <- function(input, output, session) {
   t1 <-
     ggplot(vote[vote$Precinct.Name %in% "Arlington Totals",],
                 aes(x = date,
-                    y =  eval(as.name(t1.in() )),
+                    y =  eval(as.name(t1.in() ))
                     )) + # input$timeline.in1
     geom_line(aes(color = Precinct.Name)) +
     geom_area(alpha = 0.1, fill = '#ffa500') +
@@ -519,14 +974,14 @@ server <- function(input, output, session) {
         )
       ),
       showlegend = FALSE,
-      title = list(
-        text = paste("Arlington Overall:", t1.in.lab() ),
-        font = list(
-          family = c("Arial", "Droid Sans", "Times New Roman"),
-          size = 17
-        ),
-        y = 0.98
-      ),
+      # title = list(
+      #   text = paste("Arlington Overall:", t1.in.lab() ),
+      #   font = list(
+      #     family = c("Arial", "Droid Sans", "Times New Roman"),
+      #     size = 17
+      #   ),
+      #   y = 0.98
+      # ),
       xaxis = list(
         title = list(
           text = ""
@@ -545,7 +1000,7 @@ server <- function(input, output, session) {
     ) %>%
     config(
       displayModeBar = FALSE
-    )
+    ) 
 
   }) # end render plotly
 
@@ -564,21 +1019,21 @@ server <- function(input, output, session) {
 
   ggplotly(t2, height = t2height)  %>%
     layout(
-      title = list(
-        text= paste("By Precinct:", t1.in.lab() ),
-        font = list(
-          family = c("Arial", "Droid Sans", "Times New Roman"),
-          size = 17
-        ),
-        y = 0.95,
-        hovertemplate = ht.timeline
-      ),
+      # title = list(
+      #   text= paste("By Precinct:", t1.in.lab() ),
+      #   font = list(
+      #     family = c("Arial", "Droid Sans", "Times New Roman"),
+      #     size = 17
+      #   ),
+      #   y = 0.95,
+      # ),
+      hovertemplate = ht.timeline,
       legend = list(
         orientation = 'h',
-        y = -0.25,
+        y = -0.28,
         x = 0,
         title = list(
-          text = "Precincts: double click to isolate, single click to add",
+          text = "Precincts: double or single click",
           side = 'top',
           font = list(
             family = c("Arial", "Droid Sans", "Times New Roman"),
@@ -804,7 +1259,6 @@ server <- function(input, output, session) {
        type = 'scatterpolar',
        fill = 'toself',
        hovertemplate = ht.polar
-
      )  %>%
        add_trace(
          mode = "lines+markers+text",
@@ -842,6 +1296,10 @@ server <- function(input, output, session) {
          fillcolor = color.3
        )  %>%
        layout(
+         margin = list(
+           l = 120,
+           r = 110
+         ),
          paper_bgcolor = "", #'rgba(0,0,0,0)',
          plot_bgcolor  = "", #'rgba(0,0,0,0.5)',
          polar = list(
