@@ -28,7 +28,7 @@ app <- file.path(root.code, "app")
 shp <- file.path(root.data, "arl-shp/Voter_Precinct_Polygons-shp/Voter_Precinct_Polygons.shp")
 votes <- file.path(root.data, "arl-daily-reports")
 latest <- file.path(votes, "10-18-2020.pdf") # this is the path to the most recent tally pdf file.
-register <- file.path(votes, "Registrant_Counts_By_Locality_10-01.pdf")
+register <- file.path(votes, "registrant_counts_by_locality_10_18.pdf")
 
 
 
