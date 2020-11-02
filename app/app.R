@@ -560,9 +560,11 @@ ui <- navbarPage(
                        )
               )
             ),
-
-
-            plotlyOutput('polar', width = '100%', height = '600px'),
+            
+            # polar output
+            fluidRow(column(12, align = 'center',
+               plotlyOutput('polar', width = '100%', height = '600px')
+                )),
 
 
 
@@ -1257,7 +1259,6 @@ server <- function(input, output, session) {
        type = 'scatterpolar',
        fill = 'toself',
        hovertemplate = ht.polar
-
      )  %>%
        add_trace(
          mode = "lines+markers+text",
@@ -1295,6 +1296,10 @@ server <- function(input, output, session) {
          fillcolor = color.3
        )  %>%
        layout(
+         margin = list(
+           l = 120,
+           r = 110
+         ),
          paper_bgcolor = "", #'rgba(0,0,0,0)',
          plot_bgcolor  = "", #'rgba(0,0,0,0.5)',
          polar = list(
