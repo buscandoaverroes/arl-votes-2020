@@ -208,6 +208,7 @@ source(file = file.path(root.code, "code/votes-28-oct.R"))
 source(file = file.path(root.code, "code/votes-29-oct.R"))
 source(file = file.path(root.code, "code/votes-30-oct.R"))
 source(file = file.path(root.code, "code/votes-31-oct.R"))
+source(file = file.path(root.code,  "code/votes-1-nov.R"))
 
 
 # import the by-day objects the above scripts generate
@@ -225,12 +226,14 @@ vote28oct <- readRDS(file = file.path(votes, "28-oct.Rda"))
 vote29oct <- readRDS(file = file.path(votes, "29-oct.Rda"))
 vote30oct <- readRDS(file = file.path(votes, "30-oct.Rda"))
 vote31oct <- readRDS(file = file.path(votes, "31-oct.Rda"))
+vote1nov  <- readRDS(file = file.path(votes,  "1-nov.Rda"))
 
 
 
 # append all
 vote.data <-
   bind_rows(
+    vote1nov,
     vote31oct,
     vote30oct,
     vote29oct,

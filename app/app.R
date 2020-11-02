@@ -24,8 +24,8 @@ load("data/arl-vote2020.Rdata")
 
 
 # update
-up.date <- "Oct 31"
-date.data <- "2020-10-31"
+up.date <- "Nov 1"
+date.data <- "2020-11-1"
 
 # format date and make data changes.
 vote <- vote.data
@@ -81,7 +81,7 @@ heatmapvars <- c("Total.Votes", "Mail.Received", "Early.Voted",
 
 
 
-pop.filter <- vote[vote$date %in% "2020-10-31",] %>%
+pop.filter <- vote[vote$date %in% date.data,] %>%
   select(popupvars)
 
 # # forheatmap

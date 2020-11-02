@@ -63,7 +63,12 @@ yesterday  <- lubridate::as_date(ymd("2020-10-30")) # the day before latest
 e.totmail <- 1 # error term for total mail. My counts are correct as far as I know
 e.outstanding <- 1 # error term for Mail.Outstanding.
 
+### For November [i]
+e.totmail1 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding1 <- 1 # error term for Mail.Outstanding.
 
+
+### For October [i]
 e.totmail31 <- 1 # error term for total mail. My counts are correct as far as I know
 e.outstanding31 <- 1 # error term for Mail.Outstanding.
 
