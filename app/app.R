@@ -139,7 +139,12 @@ ht.scatter2 <- paste("<b>%{text}</b>",
                     "<br>Turnout: %{marker.color:.1f}%",
                     "<extra></extra>") # 
 
-
+ht.scatter3 <- paste("<b>%{text}</b>",
+                    #"<br> Active Registered: %{marker.size:,f}",
+                    "<br>Mail Ballot Return Rate: %{x:.2f}",
+                    "<br>Outstanding Votes: %{y:,f}",
+                    "<br>Turnout: %{marker.color:.1f}%",
+                    "<extra></extra>") #  
 
 # correlation data
 # ## from https://stackoverflow.com/a/13112337/4747043
@@ -300,10 +305,19 @@ ui <- navbarPage(
             tags$br(),tags$br(),
           
           # scatter 2 output ----
-          fluidRow(column(12, align = 'center', tags$h3(tags$b("Active Turnout vs Early Voting-to-Mail Ratio")),
+          fluidRow(column(12, align = 'center', tags$h3(tags$b("Early Voting-to-Mail Ratio and Active Turnout")),
                           tags$body("A higher ratio indicates that a greater share of votes came from in-person
                                     early voting."))),
           fluidRow(tags$br(),tags$br(),plotlyOutput('scatter2', width = '100%', height = s2height)),
+          tags$br(),tags$br(),
+          
+          # scatter 3 output ----
+          fluidRow(column(12, align = 'center', tags$h3(tags$b("Mail Ballot Return Rate and Oustanding Votes")),
+                          tags$body("The return rate is the fraction of mail ballots returned to Arlington over the number
+                                    of mail ballots requested; 1 indicates that all ballots are returned.
+                                    Oustanding Votes is the remainder of Active Registered Voter minus all mail and early votes
+                                    received by precinct."))),
+          fluidRow(tags$br(),tags$br(),plotlyOutput('scatter3', width = '100%', height = t1height)),
           tags$br(),tags$br(),
           
 
@@ -788,8 +802,6 @@ server <- function(input, output, session) {
       config(
         displayModeBar = FALSE
       ) 
-      
-    
     
   })
   
@@ -815,6 +827,7 @@ server <- function(input, output, session) {
           title = "Early Voting-to-Mail Ratio"
         ),
         yaxis = list(
+          showgrid = FALSE,
           title = "Precinct",
           showticklabels = FALSE
         ),
@@ -844,11 +857,82 @@ server <- function(input, output, session) {
       config(
         displayModeBar = FALSE
       ) 
+
+    
+  })
+  
+  
+  # scatter 3 
+  output$scatter3 <- renderPlotly({
+    
+    scatter <- plot_ly() %>%
+      add_trace(
+        data = vote.pr,
+        type = 'scatter', 
+        mode = 'markers',
+        x = ~Mail.Ballot.Return.Rate, 
+        y = ~Outstanding.Votes, 
+        size = ~Active.Registered,
+        color = ~Active.Turnout,
+        frame = ~date,
+        text = ~Precinct.Name
+      ) %>%
+      layout(
+        title = list(
+          text = "",
+          font = list(
+            family = c("Arial", "Droid Sans", "Times New Roman"),
+            size = 18
+          )
+        ),
+        yaxis = list(
+          rangemode = 'tozero',
+          title = list(
+            text = "Oustanding Votes",
+            font = list(
+              family = c("Arial", "Droid Sans", "Times New Roman"),
+              size = 17
+            )
+          )
+        ),
+        xaxis = list(
+          title = list(
+            text = "Mail Ballot Return Rate",
+            font = list(
+              family = c("Arial", "Droid Sans", "Times New Roman"),
+              size = 17
+            )
+          )
+        )
+      ) %>% # end layout
+      colorbar(
+        title = paste("% Active", "<br>Turnout"),
+        x = 0.90,
+        y = 1.3,
+        len = 0.7,
+        lenmode = 'percent',
+        thickness = 12
+      ) %>%
+      animation_opts(
+        frame = frame_dur(),
+        transition = frame_trans() ,
+        easing = input$in_ease_type,
+        redraw = FALSE
+      ) %>%
+      animation_slider(
+        currentvalue = list(prefix = "Date ", font = list(color='red')),
+        y = -0.1
+      ) %>%
+      style(
+        hovertemplate = ht.scatter3
+      ) %>%
+      config(
+        displayModeBar = FALSE
+      ) 
     
     
     
   })
-  
   
   
 
