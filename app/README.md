@@ -47,7 +47,7 @@ date on the splash page. Note that sometimes Arlington releases documents
 with files names that conflict with the report date generated on the document
 itself; however, the dates I use always refer to the date on the actual raw document.
 The registration data is also public
-and was last updated on 1 October, 2020. The data that define the
+and was last updated on 18 October, 2020. The data that define the
 precinct geographic boundaries and names come from Arlington County;
 the files were updated last on 24 September, 2020, although they are not used in
 the current version of this app.
@@ -67,9 +67,10 @@ in 'translating' the data from pdf to R, you can see exactly what I
 did and improve it. The voting data are published sort-of-daily by
 Arlington, so I upload the most recent document and tell you the
 date on the splash page. Voter registration data is also public
-and was last updated on 1 October, 2020. The data that define the
-precinct geographic boundaries and names come from Arlington County;
-the files were updated last on 24 September, 2020.
+and was last updated on 18 October, 2020. The data that define the
+precinct geographic boundaries and names come from Arlington County -- 
+while these boundary files are not used in this app, they 
+were updated last on 24 September, 2020.
 
 
 ## Technical Details
