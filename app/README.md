@@ -6,17 +6,17 @@ This app is intended as a public good to
 visualize open voting data to all residents of Arlington County,
 Virginia and to the general public at large. As voting is
 fundamental right and responsibility in all democratic republics
-around the world, everyone -- regardless of voting eligability or status --
-should have access to the data that is already made availabile by public entities and
-that data should transparently presented, human-intelligable, and anonymous. As such,
+around the world, everyone should have access to the data that
+is already made availabile by public entities and
+this data should transparently presented, human-intelligable, and anonymous. As such,
 this project is run independently and is not affiliated with Arlington County in any
 capacity.
 
 ## Contact
-You can write me at buscandoaverroes@icloud.com or contribute to the code at on [GitHub](https://github.com/buscandoaverroes/arl-votes-2020). Please do write me or contribute suggestions on how to improve the dashboard.
+You can write me at buscandoaverroes@icloud.com or contribute to the code on [GitHub](https://github.com/buscandoaverroes/arl-votes-2020).
 
 ## Viewing
-The app link is [here](). <br>
+The app link is here: https://buscandoaverroes.shinyapps.io/ArlVotes2020. <br>
 
 ## Using and Citing
 I've designed this as a tool for public use and reference.
@@ -26,15 +26,13 @@ meaning that you can almost do whatever you want with my work
 as long as you keep this license with whatever you do. <br><br>
 However the voting data and voting precinct data are not mine and
 you shouldn't claim them as yours either. They come with their own rules
-and licences, which I have actually taken care to find and read. You may
-not, under any circumstances, modify or alter the voting or GIS data
-from Arlington County. As I do not intend to redistribute their data,
-please refer to the links below to get the voting tallies or precinct
-boundaries from their respective sources. Please take care to note the
-licenses in the R packages that I use as well. <br>
+and licences, which I have actually taken care to find and read.
+As I do not intend to redistribute the County's data,
+please refer to the links below to get the voting tallies etc,
+from their respective sources.<br>
 
 # About the Data
-All data are updated within ~48 hours from from Arlington Country Government and
+I try to update all data within ~48 hours from from Arlington Country Government and
 Department of Elections. As of now, the voting data are published by
 Arlington County in pdf form, which means that they can't easily be
 read by a computer. This leaves two options: copy and paste the data
@@ -42,14 +40,17 @@ manually into a spreadsheet, or use packages that can read and process
 the data. While both are prone to different types of errors, I have
 opted for the latter since it is entirely reproducible if you have
 the data and my R code. This way if I or the computer make a mistake
-in 'translating' the data from pdf to R, you can see exactly what I
+in "translating" the data from pdf to R, you can see exactly what I
 did and improve it. The voting data are published sort-of-daily by
 Arlington, so I upload the most recent document and tell you the
-date on the splash page. Voter registration data is also public
-and was last updated on 1 October, 2020. The data that define the
+date on the splash page. Note that sometimes Arlington releases documents
+with files names that conflict with the report date generated on the document
+itself; however, the dates I use always refer to the date on the actual raw document.
+The registration data is also public
+and was last updated on 18 October, 2020. The data that define the
 precinct geographic boundaries and names come from Arlington County;
-the files were updated last on 24 September, 2020. Refer to the **About**
-page for additional techincal details.
+the files were updated last on 24 September, 2020, although they are not used in
+the current version of this app.
 
 
 ## Is This Data Actually Accurate?
@@ -66,9 +67,10 @@ in 'translating' the data from pdf to R, you can see exactly what I
 did and improve it. The voting data are published sort-of-daily by
 Arlington, so I upload the most recent document and tell you the
 date on the splash page. Voter registration data is also public
-and was last updated on 1 October, 2020. The data that define the
-precinct geographic boundaries and names come from Arlington County;
-the files were updated last on 24 September, 2020.
+and was last updated on 18 October, 2020. The data that define the
+precinct geographic boundaries and names come from Arlington County -- 
+while these boundary files are not used in this app, they 
+were updated last on 24 September, 2020.
 
 
 ## Technical Details
@@ -76,7 +78,7 @@ the files were updated last on 24 September, 2020.
 ### Terms and Definitions
 
 Arlington County provides figures for how many registered and active
-voters are in each precinct. The information I use in this project was
+voters are in each precinct, and the document I used was
 last updated on the first day of October, 2020, so we can assume this
 data is quite accurate for the 2020 election cycle. <br>
 
@@ -109,9 +111,9 @@ for all precincts.
 **Early Voting** for all precincts.
 - Voter Turnout and Active Voter Turnout: the difference between
 the two is a matter of what goes in the denominator:
-**Active Voter Turnout** takes only active registered voters
+**Active Voter Turnout** takes only Active Registered voters
 (**active**, in the data) as the denominator, while **Voter Turnout**
-uses all registered voters (**all**, in the data) for this subterranean
+uses All Registered voters (**all**, in the data) for this subterranean
 figure. In both cases, the numerator is **Total Votes**
 - Mail Voter Turnout: This is simply the number of
 **(No. Mail Ballots Received) / (Active Registered Voters)**
@@ -124,8 +126,8 @@ means that Early Voting and Mail-in Voting contributed equal shares
 to the overall Active Turnout. A higher ratio indicates that a Early
 Voting contributed a larger share of the (active) voter turnout compared
 to Mail-in Voting.
-- Percent Mail Counted: uses **Mail Ballots Received** as the denominator and the County-provided
-total of Mail ballots counted as the natural numerator.
+- Percent.Mail.Counted: uses **Mail Ballots Received** as the denominator and the County-provided
+total of Mail Ballots Counted as the natural numerator.
 
 ### Other Notes
 
@@ -143,16 +145,13 @@ stats tab. Conceptually, this means that, for each indicator seperately, the raw
 data is transformed such as the highest value in each indicator becomes 1 and the
 lowest value becomes zero. The code will reproduce this table for you as object
 **sp.norm**.
-- Jefferson Precinct: The Arlington Country GIS data indicate that the
-Jefferson Precinct, while considered a single precinct (No. 27),
-is split among two different Virginia House districts (Districts 47 and
-49). However, as the Arlington County Voting data does not disaggregate
-voting information by the two 'subsets' of the Jefferson district, for
-this application I have simply combined the two boundaries of the
-Jefferson House districts to form a single district consistent with the Arlington Voting Data.
 
 ## Data Sources
 This page was developed using publicly-available data, including:
-- Voting data from the Arlington County [Daily Turnout Reports](https://vote.arlingtonva.us/daily-turnout/)
-- [Voter Precinct Polygons](https://gisdata-arlgis.opendata.arcgis.com/datasets/voter-precinct-polygons)
+- Voting data from the Arlington County: Note that Arlington has changed their website recently so I'm posting the links to both the old and new daily turnout reports:
+	- [Daily Turnout Reports - Old](https://vote.arlingtonva.us/daily-turnout/)
+	- [Daily Turnout Reports - New](https://vote.arlingtonva.us/Vote-by-Mail/Daily-Turnout)
 - [Voter Registration Numbers](https://arlingtonva.s3.amazonaws.com/wp-content/uploads/sites/3/2020/10/Registrant_Counts_By_Locality.pdf)
+- I have also referred to the [Voter Precinct Polygons](https://gisdata-arlgis.opendata.arcgis.com/datasets/voter-precinct-polygons) even though they are not used
+in this app.
+- Thanks to [ColorBrewer](https://colorbrewer2.org/) who helped provide many of the color schemes in the app.

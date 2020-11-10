@@ -1,12 +1,12 @@
 # ---  --- --- --- --- --- --- --- --- --- --- --- --- #
 # MAIN-arl-votes-2020.R
-# runs all files necessary 
+# runs all files necessary
 # ---  --- --- --- --- --- --- --- --- --- --- --- --- #
 
 
 
 
-# packages ---- 
+# packages ----
 
 
 library(tidyverse)
@@ -16,49 +16,125 @@ library(pdftools)
 library(hablar)
 library(assertthat)
 library(heatmaply)
+library(tsibble)
+library(lubridate)
 
 
 
-# repo path settings 
-root.code     <- "/Volumes/LA-REPUBLIC/github/arl-votes-2020"
-root.data     <- "/Volumes/la-republic"
-  app         <- file.path(root.code, "app")
-  shp         <- file.path(root.data, "arl-shp/Voter_Precinct_Polygons-shp/Voter_Precinct_Polygons.shp")
-  votes       <- file.path(root.data, "arl-daily-reports")
-    latest    <- file.path(votes, "10-18-2020.pdf") # this is the path to the most recent tally pdf file.
-    register  <- file.path(votes, "Registrant_Counts_By_Locality_10-01.pdf")
+# repo path settings
+root.code <- "/Volumes/LA-REPUBLIC/github/arl-votes-2020"
+root.data <- "/Volumes/la-republic"
+app <- file.path(root.code, "app")
+shp <- file.path(root.data, "arl-shp/Voter_Precinct_Polygons-shp/Voter_Precinct_Polygons.shp")
+votes <- file.path(root.data, "arl-daily-reports")
+latest <- file.path(votes, "10-18-2020.pdf") # this is the path to the most recent tally pdf file.
+register <- file.path(votes, "registrant_counts_by_locality_10_18.pdf")
 
 
 
-# script settings 
-
+# script settings
+s.gis <- 0
 s.import <- 1
 
-export   <- 1 # 1 exports the file.
 
-# min/max page row number 
+
+
+export <- 1 # 1 exports the file.
+
+# min/max page row number
 min1 <- 11
 max1 <- 56
 min2 <- 4
 max2 <- 11
+totalsrow <- 12 # the row on page 2 that contains the total field
+
+# version 2 iteration (for pages where there are 45 precincts on first pdf page)
+# min1v2 <- 11
+max1v2 <- 55
+# min2v2 <- 4
+max2v2 <- 12
+totalsrowv2 <- 13 # the row on page 2 that contains the total field
+
+# latest date
+latestdate <- lubridate::as_date(ymd("2020-10-31"))
+yesterday  <- lubridate::as_date(ymd("2020-10-30")) # the day before latest
 
 # totals
-totalsrow <- 12 # the row on page 2 that contains the total field
-e.totmail     = 1 # error term for total mail. My counts are correct as far as I know
-e.outstanding = 1 # error term for mail outstanding.
-# final assertion values 
-# note these values are copied 'by hand' from 
-# the imported pdf each day to ensure total numbers are correct 
-nrow        = 54
-s.mailed    = 22860
-s.received  = 22517
-s.counted   = 2471
-s.totalmail = 53848
-s.earlyvoted= 20885
-s.totalvoted= 45873
-  
+e.totmail <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding <- 1 # error term for Mail.Outstanding.
+
+### For November [i]
+e.totmail1 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding1 <- 1 # error term for Mail.Outstanding.
 
 
+### For October [i]
+e.totmail31 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding31 <- 1 # error term for Mail.Outstanding.
+
+e.totmail30 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding30 <- 1 # error term for Mail.Outstanding.
+
+e.totmail29 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding29 <- 1 # error term for Mail.Outstanding.
+
+e.totmail28 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding28 <- 1 # error term for Mail.Outstanding.
+
+e.totmail27 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding27 <- 1 # error term for Mail.Outstanding.
+
+e.totmail26 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding26 <- 1 # error term for Mail.Outstanding.
+
+e.totmail25 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding25 <- 1 # error term for Mail.Outstanding.
+
+e.totmail23 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding23 <- 1 # error term for Mail.Outstanding.
+
+e.totmail22 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding22 <- 1 # error term for Mail.Outstanding.
+
+e.totmail21 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding21 <- 1 # error term for Mail.Outstanding.
+
+e.totmail19 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding19 <- 1 # error term for Mail.Outstanding.
+
+e.totmail18 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding18 <- 1 # error term for Mail.Outstanding.
+
+e.totmail15 <- 101 # error term for total mail. My counts are correct as far as I know
+e.outstanding15 <- 101 # error term for Mail.Outstanding.
+
+e.totmail12 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding12 <- 1 # error term for Mail.Outstanding.
+
+e.totmail9 <- 1 # error term for total mail. My counts are correct as far as I know
+e.outstanding9 <- 1 # error term for Mail.Outstanding.
+
+
+
+
+# final assertion values
+# note these values are copied 'by hand' from
+# the imported pdf each day to ensure total numbers are correct
+
+nrow <- 55 # there are 54 precincts plus one totals row
+s.mailed <- 22860
+s.received <- 22517
+s.counted <- 2471
+s.totalmail <- 53848
+s.earlyvoted <- 20885
+s.totalvoted <- 45873
+
+
+
+
+if (s.gis == 1) {
+  source(file.path(root.code, "code/gis.R"))
+}
 
 if (s.import == 1) {
   source(file.path(root.code, "code/import.R"))
@@ -85,6 +161,12 @@ if (s.import == 1) {
 # https://stackoverflow.com/questions/7340472/how-do-i-generate-a-list-with-a-specified-increment-step
 # https://stackoverflow.com/questions/18535823/how-to-union-two-date-vectors-in-r
 # https://stackoverflow.com/questions/29968152/python-setting-background-color-to-transparent-in-plotly-plots
+# https://stackoverflow.com/questions/37635085/how-to-subset-dataframe-using-string-values-from-a-list
+# https://stackoverflow.com/questions/35345782/shiny-passing-inputvar-to-aes-in-ggplot2
+# https://plotly.com/graphing-libraries/
+# https://plotly.com/python/axes/
+# https://github.com/ropensci/plotly/issues/1049
+# https://stackoverflow.com/questions/57981991/r-plotly-animated-dumbell-chart-subscript-out-of-bounds
 
 
 
